@@ -19,7 +19,8 @@ steps:
     options: '-DskipTests' 
     publishJUnitResults: false
     javaHomeOption: 'JDKVersion'
-    mavenVersionOption: 'Default'
+    mavenVersionOption: 'Path'
+    mavenDirectory: 'C:\Program Files\apache-maven-3.9.16'
 
 # 2. Desplegar el archivo .war en Azure App Service
 - task: AzureWebApp@1
