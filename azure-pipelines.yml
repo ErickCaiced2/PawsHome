@@ -15,7 +15,7 @@ steps:
 - task: Maven@4
   displayName: 'Compilar y empaquetar WAR (Spring Boot)'
   inputs:
-    mavenPomFile: 'pom.xml'
+    mavenPomFile: 'pawshome/pom.xml'
     options: '-DskipTests' 
     publishJUnitResults: false
     javaHomeOption: 'JDKVersion'
