@@ -1,7 +1,5 @@
 package com.example;
 
-import lombok.Data;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -19,13 +17,7 @@ public class HelloController {
         return "Hello World!";
     }
 
-    @Data
-    @AllArgsConstructor
-    static class Result {
-        private final int left;
-        private final int right;
-        private final long answer;
-    }
+    record Result(int left, int right, long answer) {}
 
     // SQL sample
     @RequestMapping("calc")
