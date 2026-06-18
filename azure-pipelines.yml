@@ -30,4 +30,4 @@ steps:
     appType: 'webAppLinux' # Cambia a 'webApp' si elegiste Windows en el portal
     appName: 'PawsHome'
     # Busca el archivo .war generado por Maven dentro de la carpeta target
-    package: '$(System.DefaultWorkingDirectory)/**/*.war'
+    package: '$(System.DefaultWorkingDirectory)/**/*.jar'
