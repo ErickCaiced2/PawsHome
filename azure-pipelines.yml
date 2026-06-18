@@ -28,6 +28,6 @@ steps:
   inputs:
     azureSubscription: '$(azureServiceConnection)'
     appType: 'webAppLinux' # Cambia a 'webApp' si elegiste Windows en el portal
-    appName: '$(webAppName)'
+    appName: 'PawsHome'
     # Busca el archivo .war generado por Maven dentro de la carpeta target
     package: '$(System.DefaultWorkingDirectory)/**/*.war'
