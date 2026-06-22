@@ -12,14 +12,8 @@ public class HelloController {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
 
-    @RequestMapping("/")
-    String hello() {
-        return "Hello World!";
-    }
-
     record Result(int left, int right, long answer) {}
 
-    // SQL sample
     @RequestMapping("calc")
     Result calc(@RequestParam int left, @RequestParam int right) {
         MapSqlParameterSource source = new MapSqlParameterSource()
