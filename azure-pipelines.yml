@@ -40,36 +40,30 @@ stages:
         publishLocation: 'Container'
 
 # ==========================================
-# ETAPA 2: DESPLIEGUE CONTINUO (CD) - PROTEGIDA
+# ETAPA 2: DESPLIEGUE CONTINUO (CD) - PROTEGIDA POR STAGE
 # ==========================================
 - stage: Deploy
   displayName: 'Etapa de Despliegue (CD)'
   dependsOn: Build
   condition: succeeded()
+  # TRUCO: Ponemos el entorno aquí arriba para heredar la aprobación manual en toda la etapa
   jobs:
-  - deployment: DeployAzureJob
+  - job: DeployAzureJob # Volvemos a un 'job' plano y común (evita el bucle del agente)
     displayName: 'Desplegar a Azure App Service'
-    # Esta línea vincula el trabajo con el entorno que configuraste en el Paso 1
-    environment: 'Produccion' 
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DownloadBuildArtifacts@0
-            displayName: 'Descargar Artefacto'
-            inputs:
-              buildType: 'current'
-              downloadType: 'single'
-              artifactName: 'pawshome-package'
-              downloadPath: '$(System.ArtifactsDirectory)'
+    steps:
+    - task: DownloadBuildArtifacts@0
+      displayName: 'Descargar Artefacto'
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'pawshome-package'
+        downloadPath: '$(System.ArtifactsDirectory)'
 
-          - task: AzureWebApp@1
-            displayName: 'Desplegar en Azure Web App'
-            inputs:
-              azureSubscription: '$(azureServiceConnection)'
-              appType: 'webAppLinux'
-              appName: '$(webAppName)'
-              package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.jar'
-              deploymentMethod: 'zipDeploy'
-              enableCustomDeployment: true
-              cleanTargetFolder: false
+    - task: AzureWebApp@1
+      displayName: 'Desplegar en Azure Web App'
+      inputs:
+        azureSubscription: '$(azureServiceConnection)'
+        appType: 'webAppLinux'
+        appName: '$(webAppName)'
+        # Mantenemos el patrón exacto que usaste en la corrida exitosa
+        package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.jar'
