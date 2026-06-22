@@ -33,4 +33,4 @@ steps:
     appType: 'webAppLinux' # Mantener 'webAppLinux' ya que tu entorno en Azure es Linux
     appName: '$(webAppName)'
     # CORRECCIÓN: Apunta al archivo .war (o .jar si corresponde) usando comodines correctamente
-    package: '$(System.DefaultWorkingDirectory)/pawshome/target/*.war'
+    package: '$(System.DefaultWorkingDirectory)/pawshome/target/*.jar'
