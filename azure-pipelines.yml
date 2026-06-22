@@ -1,5 +1,6 @@
 trigger:
 - main
+- Develop
 
 pool:
   name: 'PipelinePaws' # Tu agente local que ya funciona perfectamente
