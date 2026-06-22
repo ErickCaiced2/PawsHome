@@ -40,30 +40,36 @@ stages:
         publishLocation: 'Container'
 
 # ==========================================
-# ETAPA 2: DESPLIEGUE CONTINUO (CD) - PROTEGIDA POR STAGE
+# ETAPA 2: DESPLIEGUE CONTINUO (CD) - CORREGIDA
 # ==========================================
 - stage: Deploy
   displayName: 'Etapa de Despliegue (CD)'
   dependsOn: Build
   condition: succeeded()
-  # TRUCO: Ponemos el entorno aquí arriba para heredar la aprobación manual en toda la etapa
   jobs:
-  - job: DeployAzureJob # Volvemos a un 'job' plano y común (evita el bucle del agente)
+  - deployment: DeployAzureJob
     displayName: 'Desplegar a Azure App Service'
-    steps:
-    - task: DownloadBuildArtifacts@0
-      displayName: 'Descargar Artefacto'
-      inputs:
-        buildType: 'current'
-        downloadType: 'single'
-        artifactName: 'pawshome-package'
-        downloadPath: '$(System.ArtifactsDirectory)'
+    # AQUÍ es donde debe ir para que active el botón de aprobación manual
+    environment: 'Produccion' 
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@0
+            displayName: 'Descargar Artefacto'
+            inputs:
+              buildType: 'current'
+              downloadType: 'single'
+              artifactName: 'pawshome-package'
+              downloadPath: '$(System.ArtifactsDirectory)'
 
-    - task: AzureWebApp@1
-      displayName: 'Desplegar en Azure Web App'
-      inputs:
-        azureSubscription: '$(azureServiceConnection)'
-        appType: 'webAppLinux'
-        appName: '$(webAppName)'
-        # Mantenemos el patrón exacto que usaste en la corrida exitosa
-        package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.jar'
+          - task: AzureWebApp@1
+            displayName: 'Desplegar en Azure Web App'
+            inputs:
+              azureSubscription: '$(azureServiceConnection)'
+              appType: 'webAppLinux'
+              appName: '$(webAppName)'
+              package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.jar'
+              
+              # ESTA LÍNEA ES EL SECRETO para que no se quede colgado en bucle:
+              deploymentMethod: 'zipDeploy'
