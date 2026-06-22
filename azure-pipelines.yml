@@ -72,3 +72,4 @@ stages:
               package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.jar'
               deploymentMethod: 'zipDeploy'
               enableCustomDeployment: true
+              cleanTargetFolder: false
