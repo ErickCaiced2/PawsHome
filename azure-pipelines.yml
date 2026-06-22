@@ -3,20 +3,21 @@ trigger:
 - Develop
 
 pool:
-  name: 'PipelinePaws' # Tu agente local que ya funciona perfectamente
+  name: 'PipelinePaws' # Tu agente local en Windows
 
 variables:
-  # Nombre de la conexión de servicio que creaste en el Paso 2
+  # El nombre exacto de la conexión de servicio que creaste en Azure DevOps
   azureServiceConnection: 'ConexionAzureAppService'
-  # El nombre exacto de tu Web App en el portal de Azure
-  webAppName: 'pawshome-app'
+  # El nombre exacto de tu Web App tal como aparece en el portal de Azure (PawsHome)
+  webAppName: 'PawsHome' 
 
 steps:
-# 1. Compilar el código y generar el archivo .war
+# 1. Compilar el código y generar el archivo empaquetado
 - task: Maven@4
-  displayName: 'Compilar y empaquetar WAR (Spring Boot)'
+  displayName: 'Compilar y empaquetar (Spring Boot)'
   inputs:
     mavenPomFile: 'pawshome/pom.xml'
+    goals: 'clean package' # Agregamos 'clean package' para asegurar una compilación limpia
     options: '-DskipTests' 
     publishJUnitResults: false
     javaHomeOption: 'Path'
@@ -24,12 +25,12 @@ steps:
     mavenVersionOption: 'Path'
     mavenDirectory: 'C:\Program Files\apache-maven-3.9.16'
 
-# 2. Desplegar el archivo .war en Azure App Service
+# 2. Desplegar el archivo en Azure App Service
 - task: AzureWebApp@1
   displayName: 'Desplegar en Azure Web App'
   inputs:
     azureSubscription: '$(azureServiceConnection)'
-    appType: 'webAppLinux' # Cambia a 'webApp' si elegiste Windows en el portal
-    appName: 'PawsHome'
-    # Busca el archivo .war generado por Maven dentro de la carpeta target
-    package: '$(System.DefaultWorkingDirectory)/pawshome/target/pawshome-*.jar'
+    appType: 'webAppLinux' # Mantener 'webAppLinux' ya que tu entorno en Azure es Linux
+    appName: '$(webAppName)'
+    # CORRECCIÓN: Apunta al archivo .war (o .jar si corresponde) usando comodines correctamente
+    package: '$(System.DefaultWorkingDirectory)/pawshome/target/*.war'
