@@ -69,6 +69,6 @@ stages:
               azureSubscription: '$(azureServiceConnection)'
               appType: 'webAppLinux'
               appName: '$(webAppName)'
-              package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.*'
+              package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.jar'
               deploymentMethod: 'zipDeploy'
               enableCustomDeployment: true
