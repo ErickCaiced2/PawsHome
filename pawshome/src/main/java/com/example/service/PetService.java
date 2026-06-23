@@ -1,7 +1,7 @@
 package com.example.service;
 
-import com.example.model.Pet;
-import com.example.repository.PetRepository;
+import com.example.model.Mascota;
+import com.example.repository.MascotaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,17 +11,17 @@ import java.util.List;
 public class PetService {
 
     @Autowired
-    private PetRepository petRepository;
+    private MascotaRepository petRepository;
 
-    public List<Pet> findAll() {
+    public List<Mascota> findAll() {
         return petRepository.findAll();
     }
 
-    public Pet findById(Long id) {
+    public Mascota findById(Long id) {
         return petRepository.findById(id).orElse(null);
     }
 
-    public Pet save(Pet pet) {
+    public Mascota save(Mascota pet) {
         return petRepository.save(pet);
     }
 
