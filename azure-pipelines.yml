@@ -69,7 +69,7 @@ stages:
               azureSubscription: '$(azureServiceConnection)'
               appType: 'webAppLinux'
               appName: '$(webAppName)'
-              package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.jar'
+              package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.war'
               
               # ESTA LÍNEA ES EL SECRETO para que no se quede colgado en bucle:
               deploymentMethod: 'zipDeploy'

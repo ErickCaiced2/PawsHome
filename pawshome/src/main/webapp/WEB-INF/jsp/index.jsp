@@ -1,5 +1,6 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <meta charset="UTF-8"/>
     <title>PawsHome</title>
@@ -16,10 +17,10 @@
 <body>
     <h1>PawsHome</h1>
 
-    <div th:class="${connected} ? 'status ok' : 'status err'">
-        <span th:class="${connected} ? 'dot dot-ok' : 'dot dot-err'"></span>
-        <strong th:text="${connected} ? 'Base de datos conectada' : 'Sin conexión a la base de datos'"></strong>
-        <p th:text="${dbStatus}"></p>
+    <div class="${connected ? 'status ok' : 'status err'}">
+        <span class="${connected ? 'dot dot-ok' : 'dot dot-err'}"></span>
+        <strong>${connected ? 'Base de datos conectada' : 'Sin conexión a la base de datos'}</strong>
+        <p>${dbStatus}</p>
     </div>
 </body>
 </html>
