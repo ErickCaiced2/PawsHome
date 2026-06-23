@@ -1,0 +1,23 @@
+name: Mirror to Azure DevOps
+
+on:
+  push:
+    branches:
+      - main  # O la rama que quieras sincronizar automáticamente
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout de tu código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push a Azure Repos
+        run: |
+          # Reemplaza con la URL exacta de tu repositorio de Azure DevOps (sin el "https://")
+          AZURE_REPO_URL="dev.azure.com/erickcaicedo/PawsHome/_git/PawsHome1"
+          
+          # Se hace el push usando el token secreto guardado
+          git push --prune --force https://x-token-auth:${{ secrets.AZURE_DEVOPS_PAT }}@$AZURE_REPO_URL refs/remotes/origin/*:refs/heads/*
