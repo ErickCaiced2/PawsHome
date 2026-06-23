@@ -51,7 +51,7 @@ class MascotaServiceTest {
         administrador.setNombre("Admin Test");
         administrador.setCorreo("admin@pawshome.com");
         administrador.setPasswordHash("hash");
-        administrador.setRol(RolUsuario.ADMINISTRADOR);
+        administrador.setRol(RolUsuario.ADMINISTRADOR_REFUGIO);
     }
 
     // ── TASK 1.4 ──────────────────────────────────────────────────────────────
@@ -152,4 +152,37 @@ class MascotaServiceTest {
         // Si el enum no tiene el valor, @EnumSource falla en compilación → garantía de existencia
         assertThat(estado).isNotNull();
     }
+
+    // ── TASK 3.4 ──────────────────────────────────────────────────────────────
+
+    @Test
+    void listarPorAdministrador_retornaSoloMascotasDeEseAdmin() {
+        // Arrange
+        Long adminId = 10L;
+        Mascota m1 = new Mascota(); m1.setAdministrador(administrador);
+        Mascota m2 = new Mascota(); m2.setAdministrador(administrador);
+        when(mascotaRepository.findByAdministradorId(adminId)).thenReturn(List.of(m1, m2));
+
+        // Act
+        List<Mascota> resultado = mascotaService.listarPorAdministrador(adminId);
+
+        // Assert: solo se devuelven las del administrador, nunca todas
+        assertThat(resultado).hasSize(2);
+        verify(mascotaRepository).findByAdministradorId(adminId);
+    }
+
+    @Test
+    void listarPorAdministrador_delegaFiltradoAlRepositorio() {
+        // La seguridad de aislamiento (no ver mascotas ajenas) la garantiza
+        // la query al repo con el id exacto, no un filtrado manual en memoria.
+        Long adminId = 99L;
+        when(mascotaRepository.findByAdministradorId(adminId)).thenReturn(List.of());
+
+        mascotaService.listarPorAdministrador(adminId);
+
+        // Verifica que se pasa el id correcto al repositorio — no findAll()
+        verify(mascotaRepository, times(1)).findByAdministradorId(adminId);
+        verify(mascotaRepository, never()).findAll();
+    }
 }
+

@@ -5,6 +5,7 @@ import com.example.service.MascotaService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -28,5 +29,18 @@ public class MascotaController {
         List<Mascota> mascotas = mascotaService.listarDisponibles();
         model.addAttribute("mascotas", mascotas);
         return "mascotas/disponibles";
+    }
+
+    /**
+     * TASK 3.4 - Listado de gestion del administrador.
+     *
+     * TODO: cuando exista autenticacion, obtener el id del administrador desde
+     * el usuario autenticado y proteger esta ruta para ADMINISTRADOR_REFUGIO.
+     */
+    @GetMapping("/gestion")
+    public String gestionAdministrador(@RequestParam("administradorId") Long administradorId, Model model) {
+        List<Mascota> mascotas = mascotaService.listarPorAdministrador(administradorId);
+        model.addAttribute("mascotas", mascotas);
+        return "mascotas/gestion";
     }
 }

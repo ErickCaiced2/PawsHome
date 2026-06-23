@@ -44,10 +44,24 @@ public class MascotaService {
         return mascotaRepository.findByEstadoDisponibilidad(EstadoMascota.DISPONIBLE);
     }
 
-    public List<Mascota> findByAdministrador(Long administradorId) {
+    /**
+     * TASK 3.4 — Lista las mascotas del administrador autenticado.
+     *
+     * El aislamiento entre administradores se garantiza a nivel de query:
+     * el repositorio filtra por administrador_id en SQL, nunca se hace
+     * un findAll() + filtrado en memoria, evitando fugas de datos.
+     *
+     * TODO (TASK Security): cuando Spring Security esté integrado, este método
+     * recibirá el id desde el SecurityContext en lugar de recibirlo como parámetro.
+     */
+    public List<Mascota> listarPorAdministrador(Long administradorId) {
         return mascotaRepository.findByAdministradorId(administradorId);
     }
 
+    /**
+     * Busca una mascota por id verificando que pertenezca al administrador dado.
+     * Usado para operaciones de modificación donde se necesita confirmar propiedad.
+     */
     public Optional<Mascota> findByIdAndAdministrador(Long id, Long administradorId) {
         return mascotaRepository.findByIdAndAdministradorId(id, administradorId);
     }
