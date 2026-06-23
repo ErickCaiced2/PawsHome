@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Acceso Denegado - PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+</head>
+<body>
+    <div class="error-container">
+        <h1>Acceso Denegado</h1>
+        <p>No tienes permisos para acceder a esta página.</p>
+        <p>Solo los administradores de refugio pueden realizar esta acción.</p>
+        <a th:href="@{/}" class="btn-primary">Volver al inicio</a>
+    </div>
+</body>
+</html>

@@ -4,11 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class MascotaForm {
 
     @NotBlank(message = "El nombre es requerido")
@@ -35,4 +33,15 @@ public class MascotaForm {
 
     @Size(max = 255, message = "La URL de la imagen no puede superar los 255 caracteres")
     private String imagenUrl;
+
+    public MascotaForm(String nombre, String especie, String raza, String edadAproximada,
+                       String sexo, String descripcion, String imagenUrl) {
+        this.nombre = nombre;
+        this.especie = especie;
+        this.raza = raza;
+        this.edadAproximada = edadAproximada;
+        this.sexo = sexo;
+        this.descripcion = descripcion;
+        this.imagenUrl = imagenUrl;
+    }
 }

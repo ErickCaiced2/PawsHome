@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+</head>
+<body>
+    <div class="login-container">
+        <h1>PawsHome</h1>
+        <h2>Iniciar Sesión</h2>
+
+        <div th:if="${param.error}" class="alert alert-error">
+            Correo o contraseña incorrectos.
+        </div>
+        <div th:if="${param.logout}" class="alert alert-info">
+            Sesión cerrada exitosamente.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="username">Correo electrónico</label>
+                <input type="email" id="username" name="username"
+                       placeholder="correo@ejemplo.com" required autofocus>
+            </div>
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Contraseña" required>
+            </div>
+            <button type="submit" class="btn-primary">Ingresar</button>
+        </form>
+    </div>
+</body>
+</html>
