@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar mascota | PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+    <link rel="stylesheet" th:href="@{/css/registro-mascota.css}">
+</head>
+<body class="pagina-registro">
+<main class="registro-contenedor">
+    <header class="registro-encabezado">
+        <a class="marca" href="#" aria-label="PawsHome">
+            <span class="marca-icono" aria-hidden="true">P</span>
+            <span>PawsHome</span>
+        </a>
+        <h1>Registrar mascota</h1>
+        <p>Completa la informacion basica para publicar una mascota disponible.</p>
+    </header>
+
+    <!--
+    Contrato esperado del backend:
+    Model attribute: mascotaForm
+    GET: /mascotas/nueva
+    POST: /mascotas
+    Vista: mascotas/registro-mascota
+    -->
+    <form class="tarjeta-formulario"
+          th:action="@{/mascotas}"
+          th:object="${mascotaForm}"
+          method="post"
+          novalidate>
+        <h2>Datos de la mascota</h2>
+
+        <div class="resumen-errores" th:if="${#fields.hasAnyErrors()}">
+            Corrige los errores indicados antes de continuar.
+        </div>
+
+        <div class="rejilla-formulario">
+            <div class="grupo-campo">
+                <label for="nombre">Nombre</label>
+                <input id="nombre"
+                       type="text"
+                       th:field="*{nombre}"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'campo-invalido' : ''"
+                       maxlength="80"
+                       required>
+                <span class="error-campo"
+                      th:if="${#fields.hasErrors('nombre')}"
+                      th:errors="*{nombre}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="especie">Especie</label>
+                <input id="especie"
+                       type="text"
+                       th:field="*{especie}"
+                       th:classappend="${#fields.hasErrors('especie')} ? 'campo-invalido' : ''"
+                       maxlength="50"
+                       required>
+                <span class="error-campo"
+                      th:if="${#fields.hasErrors('especie')}"
+                      th:errors="*{especie}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="raza">Raza <span>(opcional)</span></label>
+                <input id="raza"
+                       type="text"
+                       th:field="*{raza}"
+                       th:classappend="${#fields.hasErrors('raza')} ? 'campo-invalido' : ''"
+                       maxlength="80">
+                <span class="error-campo"
+                      th:if="${#fields.hasErrors('raza')}"
+                      th:errors="*{raza}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="edadAproximada">Edad aproximada</label>
+                <input id="edadAproximada"
+                       type="text"
+                       th:field="*{edadAproximada}"
+                       th:classappend="${#fields.hasErrors('edadAproximada')} ? 'campo-invalido' : ''"
+                       maxlength="50"
+                       required>
+                <span class="error-campo"
+                      th:if="${#fields.hasErrors('edadAproximada')}"
+                      th:errors="*{edadAproximada}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="sexo">Sexo</label>
+                <input id="sexo"
+                       type="text"
+                       th:field="*{sexo}"
+                       th:classappend="${#fields.hasErrors('sexo')} ? 'campo-invalido' : ''"
+                       maxlength="20"
+                       required>
+                <span class="error-campo"
+                      th:if="${#fields.hasErrors('sexo')}"
+                      th:errors="*{sexo}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="imagenUrl">URL de imagen <span>(opcional)</span></label>
+                <input id="imagenUrl"
+                       type="text"
+                       th:field="*{imagenUrl}"
+                       th:classappend="${#fields.hasErrors('imagenUrl')} ? 'campo-invalido' : ''"
+                       maxlength="255">
+                <span class="error-campo"
+                      th:if="${#fields.hasErrors('imagenUrl')}"
+                      th:errors="*{imagenUrl}"></span>
+            </div>
+
+            <div class="grupo-campo grupo-campo-ancho">
+                <label for="descripcion">Descripcion</label>
+                <textarea id="descripcion"
+                          th:field="*{descripcion}"
+                          th:classappend="${#fields.hasErrors('descripcion')} ? 'campo-invalido' : ''"
+                          required></textarea>
+                <span class="error-campo"
+                      th:if="${#fields.hasErrors('descripcion')}"
+                      th:errors="*{descripcion}"></span>
+            </div>
+        </div>
+
+        <div class="acciones-registro">
+            <!-- TODO: definir la ruta de cancelacion cuando se integre el controlador -->
+            <a class="boton boton-secundario" href="#">Cancelar</a>
+            <button class="boton boton-primario" type="submit">Registrar mascota</button>
+        </div>
+    </form>
+
+</main>
+</body>
+</html>
