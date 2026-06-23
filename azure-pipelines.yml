@@ -1,6 +1,7 @@
 trigger:
 - main
 - Develop
+- erick-branch
 
 pool:
   name: 'PipelinePaws' # Tu agente local en Windows
