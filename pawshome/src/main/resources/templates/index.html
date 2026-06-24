@@ -130,12 +130,6 @@
         </div>
     </section>
 
-    <section class="estado-sistema contenedor" aria-live="polite">
-        <div th:class="${connected} ? 'estado-bd estado-bd-ok' : 'estado-bd estado-bd-error'">
-            <strong th:text="${connected} ? 'Base de datos conectada' : 'Sin conexion a la base de datos'"></strong>
-            <p th:text="${dbStatus}"></p>
-        </div>
-    </section>
 
 </main>
 
