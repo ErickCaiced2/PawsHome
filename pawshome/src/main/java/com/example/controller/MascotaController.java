@@ -31,6 +31,12 @@ public class MascotaController {
         this.usuarioRepository = usuarioRepository;
     }
 
+    @GetMapping("/disponibles")
+    public String listarDisponibles(Model model) {
+        model.addAttribute("mascotas", mascotaService.listarDisponibles());
+        return "mascotas/listado-disponibles";
+    }
+
     @GetMapping("/nueva")
     public String mostrarFormularioRegistro(Model model) {
         if (!model.containsAttribute(FORM_ATTRIBUTE)) {

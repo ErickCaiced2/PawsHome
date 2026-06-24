@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class MascotaService {
@@ -20,6 +21,11 @@ public class MascotaService {
 
     public MascotaService(MascotaRepository mascotaRepository) {
         this.mascotaRepository = mascotaRepository;
+    }
+
+    @Transactional(readOnly = true)
+    public List<Mascota> listarDisponibles() {
+        return mascotaRepository.findByEstadoDisponibilidad(EstadoMascota.DISPONIBLE);
     }
 
     @Transactional
