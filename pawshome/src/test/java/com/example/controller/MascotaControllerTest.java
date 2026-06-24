@@ -95,14 +95,14 @@ class MascotaControllerTest {
 
     @Test
     void gestionAdministrador_retornaVistaGestion() throws Exception {
-        mockMvc.perform(get("/mascotas/gestion").param("administradorId", "1"))
+        mockMvc.perform(get("/mascotas/gestion").principal(() -> "admin@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("mascotas/gestion"));
     }
 
     @Test
     void gestionAdministrador_agregaMascotasAlModelo() throws Exception {
-        mockMvc.perform(get("/mascotas/gestion").param("administradorId", "1"))
+        mockMvc.perform(get("/mascotas/gestion").principal(() -> "admin@example.com"))
                 .andExpect(status().isOk())
                 .andExpect(model().attributeExists("mascotas"));
     }

@@ -68,13 +68,12 @@
         </div>
 
         <div class="acciones-registro">
-            <a class="boton boton-secundario"
-               th:href="@{/mascotas/gestion(administradorId=${administradorId})}">Cancelar</a>
+            <a class="boton boton-secundario" th:href="@{/mascotas/gestion}">Cancelar</a>
             <button class="boton boton-primario" type="submit">Confirmar cambio</button>
         </div>
     </form>
 
-    <a th:href="@{/mascotas/gestion(administradorId=${administradorId})}" class="volver-inicio">← Volver a gestion</a>
+    <a th:href="@{/mascotas/gestion}" class="volver-inicio">← Volver a gestion</a>
 
 </main>
 <script th:src="@{/js/interacciones.js}"></script>

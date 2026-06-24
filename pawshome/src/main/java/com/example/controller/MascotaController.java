@@ -50,7 +50,6 @@ public class MascotaController {
         model.addAttribute("mascota", mascota);
         model.addAttribute("estados", EstadoMascota.values());
         model.addAttribute("nuevoEstado", nuevoEstado);
-        model.addAttribute("administradorId", admin.getId());
         return "mascotas/cambiar-disponibilidad";
     }
 
@@ -61,7 +60,7 @@ public class MascotaController {
         Usuario admin = usuarioRepository.findByCorreo(principal.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + principal.getName()));
         mascotaService.cambiarDisponibilidad(id, nuevoEstado, admin);
-        return "redirect:/mascotas/gestion?administradorId=" + admin.getId();
+        return "redirect:/mascotas/gestion";
     }
 
     @GetMapping("/disponibles")
@@ -71,9 +70,10 @@ public class MascotaController {
     }
 
     @GetMapping("/gestion")
-    public String gestionAdministrador(@RequestParam("administradorId") Long administradorId, Model model) {
-        List<Mascota> mascotas = mascotaService.listarPorAdministrador(administradorId);
-        model.addAttribute("mascotas", mascotas);
+    public String gestionAdministrador(Model model, Principal principal) {
+        Usuario admin = usuarioRepository.findByCorreo(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + principal.getName()));
+        model.addAttribute("mascotas", mascotaService.listarPorAdministrador(admin.getId()));
         return "mascotas/gestion";
     }
 

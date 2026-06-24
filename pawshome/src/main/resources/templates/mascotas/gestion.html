@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de mascotas | PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+</head>
+<body class="pagina-inicio">
+
+<nav class="barra-navegacion">
+    <div class="contenedor navegacion-interior">
+        <a class="marca" th:href="@{/}" aria-label="PawsHome">
+            <span class="marca-icono" aria-hidden="true">🐾</span>
+            <span>PawsHome</span>
+        </a>
+        <button class="boton-menu" type="button" aria-label="Abrir menu" aria-expanded="false" data-menu-toggle>☰</button>
+        <div class="menu-navegacion" id="enlacesNavegacion">
+            <div class="enlaces-centro">
+                <a th:href="@{/}">Inicio</a>
+                <a th:href="@{/mascotas/disponibles}">Mascotas</a>
+                <a class="activo" th:href="@{/mascotas/gestion}">Mi gestion</a>
+            </div>
+            <div class="acciones-usuario">
+                <a sec:authorize="hasRole('ADMINISTRADOR_REFUGIO')" class="boton boton-primario boton-pequeno"
+                   th:href="@{/mascotas/nueva}">Registrar mascota</a>
+                <form sec:authorize="isAuthenticated()" class="logout-form" th:action="@{/logout}" method="post">
+                    <button class="boton boton-secundario boton-pequeno" type="submit">Cerrar sesion</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <section class="contenedor seccion" style="padding-top: 3rem; padding-bottom: 4rem;">
+
+        <div class="encabezado-seccion">
+            <div>
+                <h2>Mis mascotas</h2>
+                <p>Mascotas registradas bajo tu administracion.</p>
+            </div>
+            <a class="boton boton-primario boton-pequeno" th:href="@{/mascotas/nueva}">+ Registrar mascota</a>
+        </div>
+
+        <!-- Estado vacio -->
+        <div th:if="${#lists.isEmpty(mascotas)}" style="text-align:center; padding: 4rem 1rem;">
+            <p style="font-size: 3rem; margin-bottom: 1rem;">🐾</p>
+            <h3 style="font-family: 'Lora', serif; margin-bottom: .5rem;">No tienes mascotas registradas</h3>
+            <p style="color: var(--texto-suave);">Registra la primera mascota para empezar.</p>
+            <a class="boton boton-primario" th:href="@{/mascotas/nueva}" style="margin-top: 1.5rem;">Registrar mascota</a>
+        </div>
+
+        <!-- Tabla de mascotas -->
+        <div th:if="${!#lists.isEmpty(mascotas)}"
+             style="background:#fff; border:1px solid var(--borde); border-radius:1rem;
+                    box-shadow:0 4px 24px rgba(200,90,42,.08); overflow:hidden; margin-top:1.5rem;">
+            <table style="width:100%; border-collapse:collapse; font-size:.95rem;">
+                <thead>
+                    <tr style="background:var(--suave); border-bottom:1.5px solid var(--borde);">
+                        <th style="padding:.85rem 1.25rem; text-align:left; font-weight:700;">Nombre</th>
+                        <th style="padding:.85rem 1.25rem; text-align:left; font-weight:700;">Especie</th>
+                        <th style="padding:.85rem 1.25rem; text-align:left; font-weight:700;">Estado actual</th>
+                        <th style="padding:.85rem 1.25rem; text-align:left; font-weight:700;">Fecha publicacion</th>
+                        <th style="padding:.85rem 1.25rem; text-align:center; font-weight:700;">Disponibilidad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="mascota, iter : ${mascotas}"
+                        th:style="${iter.odd} ? 'background:#fafafa; border-bottom:1px solid var(--borde);'
+                                             : 'background:#fff; border-bottom:1px solid var(--borde);'">
+                        <td style="padding:.85rem 1.25rem; font-weight:600;" th:text="${mascota.nombre}"></td>
+                        <td style="padding:.85rem 1.25rem;" th:text="${mascota.especie}"></td>
+                        <td style="padding:.85rem 1.25rem;">
+                            <span th:text="${mascota.estadoDisponibilidad}"
+                                  th:style="${mascota.estadoDisponibilidad.name() == 'DISPONIBLE'}
+                                            ? 'color:#1a7f3c; font-weight:700;'
+                                            : (${mascota.estadoDisponibilidad.name() == 'ADOPTADO'}
+                                               ? 'color:var(--primario); font-weight:700;'
+                                               : 'color:var(--texto-suave); font-weight:700;')">
+                            </span>
+                        </td>
+                        <td style="padding:.85rem 1.25rem; color:var(--texto-suave); font-size:.875rem;"
+                            th:text="${#temporals.format(mascota.fechaPublicacion, 'dd/MM/yyyy')}"></td>
+                        <td style="padding:.85rem 1.25rem; text-align:center;">
+                            <a class="boton boton-secundario boton-pequeno"
+                               th:href="@{/mascotas/{id}/disponibilidad(id=${mascota.id})}">
+                                Cambiar estado
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+</main>
+
+<footer><p>© 2026 PawsHome - Hecho con amor para las mascotas</p></footer>
+<script th:src="@{/js/interacciones.js}"></script>
+</body>
+</html>
