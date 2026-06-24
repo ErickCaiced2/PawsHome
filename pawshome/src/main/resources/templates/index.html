@@ -22,6 +22,7 @@
             </div>
             <div class="acciones-usuario">
                 <a sec:authorize="isAnonymous()" th:href="@{/login}">Iniciar sesion</a>
+                <a sec:authorize="hasRole('ADMINISTRADOR_REFUGIO')" th:href="@{/mascotas/gestion}">Mis mascotas</a>
                 <a sec:authorize="hasRole('ADMINISTRADOR_REFUGIO')" class="boton boton-primario boton-pequeno" th:href="@{/mascotas/nueva}">Registrar mascota</a>
                 <form sec:authorize="isAuthenticated()" class="logout-form" th:action="@{/logout}" method="post">
                     <button class="boton boton-secundario boton-pequeno" type="submit">Cerrar sesion</button>
