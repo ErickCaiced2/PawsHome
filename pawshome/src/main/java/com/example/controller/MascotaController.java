@@ -1,6 +1,8 @@
 package com.example.controller;
 
 import com.example.dto.MascotaForm;
+import com.example.exception.MascotaNoEncontradaException;
+import com.example.model.EstadoMascota;
 import com.example.model.Mascota;
 import com.example.model.Usuario;
 import com.example.repository.UsuarioRepository;
@@ -12,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +35,33 @@ public class MascotaController {
     public MascotaController(MascotaService mascotaService, UsuarioRepository usuarioRepository) {
         this.mascotaService = mascotaService;
         this.usuarioRepository = usuarioRepository;
+    }
+
+    @GetMapping("/{id}/disponibilidad")
+    public String mostrarCambioDisponibilidad(@PathVariable Long id,
+                                              @RequestParam(required = false) EstadoMascota nuevoEstado,
+                                              Model model,
+                                              Principal principal) {
+        Usuario admin = usuarioRepository.findByCorreo(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + principal.getName()));
+        Mascota mascota = mascotaService.findByIdAndAdministrador(id, admin.getId())
+                .orElseThrow(() -> new MascotaNoEncontradaException(
+                        "Mascota " + id + " no encontrada o no pertenece al administrador"));
+        model.addAttribute("mascota", mascota);
+        model.addAttribute("estados", EstadoMascota.values());
+        model.addAttribute("nuevoEstado", nuevoEstado);
+        model.addAttribute("administradorId", admin.getId());
+        return "mascotas/cambiar-disponibilidad";
+    }
+
+    @PostMapping("/{id}/disponibilidad")
+    public String cambiarDisponibilidad(@PathVariable Long id,
+                                        @RequestParam EstadoMascota nuevoEstado,
+                                        Principal principal) {
+        Usuario admin = usuarioRepository.findByCorreo(principal.getName())
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + principal.getName()));
+        mascotaService.cambiarDisponibilidad(id, nuevoEstado, admin);
+        return "redirect:/mascotas/gestion?administradorId=" + admin.getId();
     }
 
     @GetMapping("/disponibles")
