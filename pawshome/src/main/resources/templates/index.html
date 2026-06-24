@@ -1,25 +1,145 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <meta charset="UTF-8"/>
-    <title>PawsHome</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 60px auto; }
-        .status { padding: 16px; border-radius: 8px; margin-top: 20px; }
-        .ok  { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .err { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
-        .dot-ok  { background: #28a745; }
-        .dot-err { background: #dc3545; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio | PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
 </head>
-<body>
-    <h1>PawsHome</h1>
-
-    <div th:class="${connected} ? 'status ok' : 'status err'">
-        <span th:class="${connected} ? 'dot dot-ok' : 'dot dot-err'"></span>
-        <strong th:text="${connected} ? 'Base de datos conectada' : 'Sin conexión a la base de datos'"></strong>
-        <p th:text="${dbStatus}"></p>
+<body class="pagina-inicio">
+<nav class="barra-navegacion">
+    <div class="contenedor navegacion-interior">
+        <a class="marca" th:href="@{/}" aria-label="PawsHome">
+            <span class="marca-icono" aria-hidden="true">🐾</span>
+            <span>PawsHome</span>
+        </a>
+        <button class="boton-menu" type="button" aria-label="Abrir menu" aria-expanded="false" data-menu-toggle>☰</button>
+        <div class="menu-navegacion" id="enlacesNavegacion">
+            <div class="enlaces-centro">
+                <a class="activo" th:href="@{/}">Inicio</a>
+                <a href="#" data-proximamente>Buscar</a>
+            </div>
+            <div class="acciones-usuario">
+                <a sec:authorize="isAnonymous()" th:href="@{/login}">Iniciar sesion</a>
+                <a sec:authorize="hasRole('ADMINISTRADOR_REFUGIO')" class="boton boton-primario boton-pequeno" th:href="@{/mascotas/nueva}">Registrar mascota</a>
+                <form sec:authorize="isAuthenticated()" class="logout-form" th:action="@{/logout}" method="post">
+                    <button class="boton boton-secundario boton-pequeno" type="submit">Cerrar sesion</button>
+                </form>
+            </div>
+        </div>
     </div>
+</nav>
+
+<main>
+    <section class="portada">
+        <img th:src="@{/images/portada.jpg}" alt="Mascotas felices">
+        <div class="portada-filtro" aria-hidden="true"></div>
+        <div class="portada-contenido">
+            <div class="insignia"><span aria-hidden="true">♥</span><span>Mascotas esperando un hogar</span></div>
+            <h1>Encuentra a tu compañero perfecto</h1>
+            <p>Conectamos mascotas que necesitan amor con familias para cambiar una vida.</p>
+        </div>
+    </section>
+
+    <section class="estadisticas">
+        <div class="contenedor cuadricula-estadisticas">
+            <div><span class="estadistica-icono" aria-hidden="true">♥</span><strong>Adopción responsable</strong><span>Promovemos hogares comprometidos</span></div>
+            <div><span class="estadistica-icono" aria-hidden="true">⌂</span><strong>Encuentra un hogar</strong><span>Conectamos mascotas con nuevas familias</span></div>
+            <div><span class="estadistica-icono" aria-hidden="true">★</span><strong>Nuestro refugio</strong><span>Damos visibilidad a las mascotas que esperan un hogar</span></div>
+            <div><span class="estadistica-icono" aria-hidden="true">✓</span><strong>Bienestar animal</strong><span>Priorizamos adopciones conscientes</span></div>
+        </div>
+    </section>
+
+    <section class="contenedor seccion mascotas-disponibles">
+        <div class="encabezado-seccion">
+            <div>
+                <h2>Mascotas disponibles</h2>
+                <p>Estas mascotas muestran el tipo de historias que PawsHome quiere reunir.</p>
+            </div>
+            <a class="boton boton-secundario boton-pequeno" href="#" data-proximamente>Ver todas</a>
+        </div>
+        <div class="cuadricula-mascotas">
+            <article class="tarjeta-mascota">
+                <div class="foto-mascota">
+                    <img th:src="@{/images/luna.jpg}" alt="Luna, perrita disponible">
+                    <span class="estado">Disponible</span>
+                    <button type="button" class="favorito" data-favorito aria-label="Agregar Luna a favoritos">♡</button>
+                </div>
+                <div class="contenido-tarjeta">
+                    <div class="nombre-especie"><h3>Luna</h3><span>Perro</span></div>
+                    <p>Labrador Retriever · 2 años · Hembra</p>
+                    <small>Calderón</small>
+                    <button class="boton boton-primario ancho-completo" type="button" data-proximamente>Ver detalles</button>
+                </div>
+            </article>
+            <article class="tarjeta-mascota">
+                <div class="foto-mascota">
+                    <img th:src="@{/images/milo.jpg}" alt="Milo, gatito disponible">
+                    <span class="estado">Disponible</span>
+                    <button type="button" class="favorito" data-favorito aria-label="Agregar Milo a favoritos">♡</button>
+                </div>
+                <div class="contenido-tarjeta">
+                    <div class="nombre-especie"><h3>Milo</h3><span>Gato</span></div>
+                    <p>Mestizo · 1 año · Macho</p>
+                    <small>Chimbacalle</small>
+                    <button class="boton boton-primario ancho-completo" type="button" data-proximamente>Ver detalles</button>
+                </div>
+            </article>
+            <article class="tarjeta-mascota">
+                <div class="foto-mascota">
+                    <img th:src="@{/images/max.jpg}" alt="Max, perrito disponible">
+                    <span class="estado">Disponible</span>
+                    <button type="button" class="favorito" data-favorito aria-label="Agregar Max a favoritos">♡</button>
+                </div>
+                <div class="contenido-tarjeta">
+                    <div class="nombre-especie"><h3>Max</h3><span>Perro</span></div>
+                    <p>Pastor Aleman · 4 años · Macho</p>
+                    <small>La Gasca</small>
+                    <button class="boton boton-primario ancho-completo" type="button" data-proximamente>Ver detalles</button>
+                </div>
+            </article>
+            <article class="tarjeta-mascota">
+                <div class="foto-mascota">
+                    <img th:src="@{/images/nala.jpg}" alt="Nala, gatita disponible">
+                    <span class="estado">Disponible</span>
+                    <button type="button" class="favorito" data-favorito aria-label="Agregar Nala a favoritos">♡</button>
+                </div>
+                <div class="contenido-tarjeta">
+                    <div class="nombre-especie"><h3>Nala</h3><span>Gato</span></div>
+                    <p>Siames · 5 años · Hembra</p>
+                    <small>Rumipamba</small>
+                    <button class="boton boton-primario ancho-completo" type="button" data-proximamente>Ver detalles</button>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="como-funciona" sec:authorize="isAuthenticated()">
+        <div class="contenedor">
+            <div class="titulo-centrado">
+                <h2>Cómo funciona</h2>
+                <p>En tres pasos sencillos puedes acercar una mascota a una familia.</p>
+            </div>
+            <div class="cuadricula-pasos">
+                <article><span class="emoji" aria-hidden="true">1</span><b>01</b><h3>Publica</h3><p>Registra una mascota con sus datos basicos y una descripcion clara.</p></article>
+                <article><span class="emoji" aria-hidden="true">2</span><b>02</b><h3>Comparte</h3><p>Haz visible su historia para que mas personas puedan conocerla.</p></article>
+                <article><span class="emoji" aria-hidden="true">3</span><b>03</b><h3>Acompaña</h3><p>Gestiona el proceso y ayuda a concretar una adopcion responsable.</p></article>
+            </div>
+        </div>
+    </section>
+
+    <section class="estado-sistema contenedor" aria-live="polite">
+        <div th:class="${connected} ? 'estado-bd estado-bd-ok' : 'estado-bd estado-bd-error'">
+            <strong th:text="${connected} ? 'Base de datos conectada' : 'Sin conexion a la base de datos'"></strong>
+            <p th:text="${dbStatus}"></p>
+        </div>
+    </section>
+
+</main>
+
+<div class="aviso-proximamente" id="avisoProximamente" role="status" aria-live="polite">Funcionalidad proximamente</div>
+<footer><p>© 2026 PawsHome - Hecho con amor para las mascotas</p></footer>
+<script th:src="@{/js/interacciones.js}"></script>
 </body>
 </html>
