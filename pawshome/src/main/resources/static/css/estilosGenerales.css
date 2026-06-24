@@ -57,6 +57,15 @@ textarea {
     font: inherit;
 }
 
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+    outline: 3px solid rgba(245, 166, 35, .55);
+    outline-offset: 3px;
+}
+
 .contenedor {
     width: min(100% - 2rem, 1280px);
     margin-inline: auto;
@@ -157,6 +166,28 @@ textarea {
 .grupo-campo textarea {
     min-height: 8rem;
     resize: vertical;
+}
+
+.campo-con-boton {
+    position: relative;
+}
+
+.campo-con-boton input {
+    padding-right: 3rem;
+}
+
+.mostrar-contrasena {
+    position: absolute;
+    top: 50%;
+    right: .75rem;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: var(--texto-suave);
+    background: transparent;
+    border: 0;
+    transform: translateY(-50%);
+    cursor: pointer;
 }
 
 .grupo-campo input:focus,

@@ -38,7 +38,7 @@ public class SecurityConfig {
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/login", "/mascotas/disponibles",
-                        "/css/**", "/js/**", "/img/**", "/", "/calc").permitAll()
+                        "/css/**", "/js/**", "/img/**", "/images/**", "/", "/calc").permitAll()
                 .requestMatchers("/mascotas/nueva", "/mascotas",
                         "/mascotas/gestion", "/mascotas/*/disponibilidad")
                         .hasRole("ADMINISTRADOR_REFUGIO")
@@ -47,11 +47,15 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/", true)
+                .defaultSuccessUrl("/")
                 .permitAll()
             )
             .logout(logout -> logout
-                .logoutSuccessUrl("/login?logout")
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .deleteCookies("JSESSIONID")
                 .permitAll()
             )
             .exceptionHandling(ex -> ex
