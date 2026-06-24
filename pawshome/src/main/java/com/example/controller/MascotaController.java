@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.MascotaForm;
+import com.example.model.Mascota;
 import com.example.model.Usuario;
 import com.example.repository.UsuarioRepository;
 import com.example.service.MascotaService;
@@ -13,8 +14,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequestMapping("/mascotas")
@@ -35,6 +38,13 @@ public class MascotaController {
     public String listarDisponibles(Model model) {
         model.addAttribute("mascotas", mascotaService.listarDisponibles());
         return "mascotas/listado-disponibles";
+    }
+
+    @GetMapping("/gestion")
+    public String gestionAdministrador(@RequestParam("administradorId") Long administradorId, Model model) {
+        List<Mascota> mascotas = mascotaService.listarPorAdministrador(administradorId);
+        model.addAttribute("mascotas", mascotas);
+        return "mascotas/gestion";
     }
 
     @GetMapping("/nueva")

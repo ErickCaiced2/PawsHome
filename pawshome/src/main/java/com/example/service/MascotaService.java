@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MascotaService {
@@ -26,6 +27,16 @@ public class MascotaService {
     @Transactional(readOnly = true)
     public List<Mascota> listarDisponibles() {
         return mascotaRepository.findByEstadoDisponibilidad(EstadoMascota.DISPONIBLE);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Mascota> listarPorAdministrador(Long administradorId) {
+        return mascotaRepository.findByAdministradorId(administradorId);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Mascota> findByIdAndAdministrador(Long id, Long administradorId) {
+        return mascotaRepository.findByIdAndAdministradorId(id, administradorId);
     }
 
     @Transactional

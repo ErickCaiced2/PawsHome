@@ -13,4 +13,6 @@ import java.util.Optional;
 public interface MascotaRepository extends JpaRepository<Mascota, Long> {
     Optional<Mascota> findByIdAndAdministrador(Long id, Usuario administrador);
     List<Mascota> findByEstadoDisponibilidad(EstadoMascota estado);
+    List<Mascota> findByAdministradorId(Long administradorId);
+    Optional<Mascota> findByIdAndAdministradorId(Long id, Long administradorId);
 }
