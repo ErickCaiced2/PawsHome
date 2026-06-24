@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.dto.MascotaForm;
 import com.example.exception.AccesoDenegadoException;
 import com.example.exception.MascotaNoEncontradaException;
 import com.example.model.EstadoMascota;
@@ -80,6 +81,50 @@ class MascotaServiceTest {
                 () -> mascotaService.cambiarDisponibilidad(1L, EstadoMascota.ADOPTADO, usuario));
 
         verify(mascotaRepository, never()).findByIdAndAdministrador(any(), any());
+        verify(mascotaRepository, never()).save(any());
+    }
+
+    @Test
+    void registrarMascota_conAdminRefugio_guardaMascotaDisponible() {
+        Usuario admin = new Usuario();
+        admin.setRol(RolUsuario.ADMINISTRADOR_REFUGIO);
+
+        MascotaForm form = new MascotaForm(
+                "Luna",
+                "Perro",
+                "Mestiza",
+                "2 años",
+                "Hembra",
+                "Tranquila y cariñosa",
+                "https://example.com/luna.jpg"
+        );
+
+        when(mascotaRepository.save(any(Mascota.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Mascota mascota = mascotaService.registrarMascota(form, admin);
+
+        assertEquals("Luna", mascota.getNombre());
+        assertEquals("Perro", mascota.getEspecie());
+        assertEquals("Mestiza", mascota.getRaza());
+        assertEquals("2 años", mascota.getEdadAproximada());
+        assertEquals("Hembra", mascota.getSexo());
+        assertEquals("Tranquila y cariñosa", mascota.getDescripcion());
+        assertEquals("https://example.com/luna.jpg", mascota.getImagenUrl());
+        assertEquals(EstadoMascota.DISPONIBLE, mascota.getEstadoDisponibilidad());
+        assertSame(admin, mascota.getAdministrador());
+        assertNotNull(mascota.getFechaPublicacion());
+        verify(mascotaRepository).save(mascota);
+    }
+
+    @Test
+    void registrarMascota_conRolIncorrecto_lanzaAccesoDenegadoException() {
+        Usuario usuario = new Usuario();
+        usuario.setRol(RolUsuario.USUARIO);
+        MascotaForm form = new MascotaForm();
+
+        assertThrows(AccesoDenegadoException.class,
+                () -> mascotaService.registrarMascota(form, usuario));
+
         verify(mascotaRepository, never()).save(any());
     }
 }

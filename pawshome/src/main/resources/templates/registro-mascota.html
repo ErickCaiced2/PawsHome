@@ -7,10 +7,10 @@
     <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
     <link rel="stylesheet" th:href="@{/css/registro-mascota.css}">
 </head>
-<body class="pagina-registro">
+<body class="pagina-registro-mascota">
 <main class="registro-contenedor">
     <header class="registro-encabezado">
-        <a class="marca" href="#" aria-label="PawsHome">
+        <a class="marca" th:href="@{/}" aria-label="PawsHome">
             <span class="marca-icono" aria-hidden="true">P</span>
             <span>PawsHome</span>
         </a>
@@ -18,13 +18,6 @@
         <p>Completa la informacion basica para publicar una mascota disponible.</p>
     </header>
 
-    <!--
-    Contrato esperado del backend:
-    Model attribute: mascotaForm
-    GET: /mascotas/nueva
-    POST: /mascotas
-    Vista: mascotas/registro-mascota
-    -->
     <form class="tarjeta-formulario"
           th:action="@{/mascotas}"
           th:object="${mascotaForm}"
@@ -43,9 +36,12 @@
                        type="text"
                        th:field="*{nombre}"
                        th:classappend="${#fields.hasErrors('nombre')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('nombre')}"
+                       th:aria-describedby="${#fields.hasErrors('nombre')} ? 'nombre-error' : null"
                        maxlength="80"
                        required>
-                <span class="error-campo"
+                <span id="nombre-error"
+                      class="error-campo"
                       th:if="${#fields.hasErrors('nombre')}"
                       th:errors="*{nombre}"></span>
             </div>
@@ -56,9 +52,12 @@
                        type="text"
                        th:field="*{especie}"
                        th:classappend="${#fields.hasErrors('especie')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('especie')}"
+                       th:aria-describedby="${#fields.hasErrors('especie')} ? 'especie-error' : null"
                        maxlength="50"
                        required>
-                <span class="error-campo"
+                <span id="especie-error"
+                      class="error-campo"
                       th:if="${#fields.hasErrors('especie')}"
                       th:errors="*{especie}"></span>
             </div>
@@ -69,8 +68,11 @@
                        type="text"
                        th:field="*{raza}"
                        th:classappend="${#fields.hasErrors('raza')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('raza')}"
+                       th:aria-describedby="${#fields.hasErrors('raza')} ? 'raza-error' : null"
                        maxlength="80">
-                <span class="error-campo"
+                <span id="raza-error"
+                      class="error-campo"
                       th:if="${#fields.hasErrors('raza')}"
                       th:errors="*{raza}"></span>
             </div>
@@ -81,9 +83,12 @@
                        type="text"
                        th:field="*{edadAproximada}"
                        th:classappend="${#fields.hasErrors('edadAproximada')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('edadAproximada')}"
+                       th:aria-describedby="${#fields.hasErrors('edadAproximada')} ? 'edadAproximada-error' : null"
                        maxlength="50"
                        required>
-                <span class="error-campo"
+                <span id="edadAproximada-error"
+                      class="error-campo"
                       th:if="${#fields.hasErrors('edadAproximada')}"
                       th:errors="*{edadAproximada}"></span>
             </div>
@@ -94,9 +99,12 @@
                        type="text"
                        th:field="*{sexo}"
                        th:classappend="${#fields.hasErrors('sexo')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('sexo')}"
+                       th:aria-describedby="${#fields.hasErrors('sexo')} ? 'sexo-error' : null"
                        maxlength="20"
                        required>
-                <span class="error-campo"
+                <span id="sexo-error"
+                      class="error-campo"
                       th:if="${#fields.hasErrors('sexo')}"
                       th:errors="*{sexo}"></span>
             </div>
@@ -104,11 +112,14 @@
             <div class="grupo-campo">
                 <label for="imagenUrl">URL de imagen <span>(opcional)</span></label>
                 <input id="imagenUrl"
-                       type="text"
+                       type="url"
                        th:field="*{imagenUrl}"
                        th:classappend="${#fields.hasErrors('imagenUrl')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('imagenUrl')}"
+                       th:aria-describedby="${#fields.hasErrors('imagenUrl')} ? 'imagenUrl-error' : null"
                        maxlength="255">
-                <span class="error-campo"
+                <span id="imagenUrl-error"
+                      class="error-campo"
                       th:if="${#fields.hasErrors('imagenUrl')}"
                       th:errors="*{imagenUrl}"></span>
             </div>
@@ -118,20 +129,23 @@
                 <textarea id="descripcion"
                           th:field="*{descripcion}"
                           th:classappend="${#fields.hasErrors('descripcion')} ? 'campo-invalido' : ''"
+                          th:aria-invalid="${#fields.hasErrors('descripcion')}"
+                          th:aria-describedby="${#fields.hasErrors('descripcion')} ? 'descripcion-error' : null"
                           required></textarea>
-                <span class="error-campo"
+                <span id="descripcion-error"
+                      class="error-campo"
                       th:if="${#fields.hasErrors('descripcion')}"
                       th:errors="*{descripcion}"></span>
             </div>
         </div>
 
         <div class="acciones-registro">
-            <!-- TODO: definir la ruta de cancelacion cuando se integre el controlador -->
-            <a class="boton boton-secundario" href="#">Cancelar</a>
+            <a class="boton boton-secundario" th:href="@{/}">Cancelar</a>
             <button class="boton boton-primario" type="submit">Registrar mascota</button>
         </div>
     </form>
 
+    <a th:href="@{/}" class="volver-inicio">← Regresar al inicio</a>
 </main>
 </body>
 </html>
