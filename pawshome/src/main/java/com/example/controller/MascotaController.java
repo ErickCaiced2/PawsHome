@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 @RequestMapping("/mascotas")
@@ -48,7 +47,7 @@ public class MascotaController {
                 .orElseThrow(() -> new MascotaNoEncontradaException(
                         "Mascota " + id + " no encontrada o no pertenece al administrador"));
         model.addAttribute("mascota", mascota);
-        model.addAttribute("estados", EstadoMascota.values());
+        model.addAttribute("estados", mascotaService.estadosPermitidosParaCambio());
         model.addAttribute("nuevoEstado", nuevoEstado);
         return "mascotas/cambiar-disponibilidad";
     }
