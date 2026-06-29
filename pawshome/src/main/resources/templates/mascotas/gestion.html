@@ -23,8 +23,6 @@
                 <a class="activo" th:href="@{/mascotas/gestion}">Mi gestion</a>
             </div>
             <div class="acciones-usuario">
-                <a sec:authorize="hasRole('ADMINISTRADOR_REFUGIO')" class="boton boton-primario boton-pequeno"
-                   th:href="@{/mascotas/nueva}">Registrar mascota</a>
                 <form sec:authorize="isAuthenticated()" class="logout-form" th:action="@{/logout}" method="post">
                     <button class="boton boton-secundario boton-pequeno" type="submit">Cerrar sesion</button>
                 </form>
@@ -41,7 +39,9 @@
                 <h2>Mis mascotas</h2>
                 <p>Mascotas registradas bajo tu administracion.</p>
             </div>
-            <a class="boton boton-primario boton-pequeno" th:href="@{/mascotas/nueva}">+ Registrar mascota</a>
+            <a th:if="${!#lists.isEmpty(mascotas)}"
+               class="boton boton-primario boton-pequeno"
+               th:href="@{/mascotas/nueva}">+ Registrar mascota</a>
         </div>
 
         <!-- Estado vacio -->

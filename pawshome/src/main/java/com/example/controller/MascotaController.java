@@ -97,6 +97,6 @@ public class MascotaController {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + principal.getName()));
 
         mascotaService.registrarMascota(mascotaForm, administrador);
-        return "redirect:/";
+        return "redirect:/mascotas/gestion";
     }
 }

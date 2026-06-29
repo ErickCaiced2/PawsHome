@@ -59,7 +59,7 @@ class MascotaControllerTest {
     }
 
     @Test
-    void registrarMascota_valida_redirigeAlInicioYRegistra() throws Exception {
+    void registrarMascota_valida_redirigeAGestionYRegistra() throws Exception {
         mockMvc.perform(post("/mascotas")
                         .principal(() -> "admin@example.com")
                         .param("nombre", "Luna")
@@ -70,7 +70,7 @@ class MascotaControllerTest {
                         .param("descripcion", "Tranquila y cariñosa")
                         .param("imagenUrl", "https://example.com/luna.jpg"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/"));
+                .andExpect(redirectedUrl("/mascotas/gestion"));
 
         assertNotNull(mascotaService.form.get());
         assertSame(admin, mascotaService.administrador.get());

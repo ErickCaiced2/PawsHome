@@ -82,23 +82,30 @@
 
             <div class="grupo-campo">
                 <label for="edadAproximada">Edad aproximada (en años)</label>
-                <input id="edadAproximada"
-                       type="number"
-                       th:field="*{edadAproximada}"
-                       th:classappend="${#fields.hasErrors('edadAproximada')} ? 'campo-invalido' : ''"
-                       th:aria-invalid="${#fields.hasErrors('edadAproximada')}"
-                       th:aria-describedby="${#fields.hasErrors('edadAproximada')} ? 'edadAproximada-error' : null"
-                       min="0"
-                       max="30"
-                       step="0.1"
-                       inputmode="decimal"
-                       placeholder="Ej: 2 o 0.5"
-                       oninput="if(this.value>30)this.value=30;if(this.value<0)this.value=0"
-                       required>
+                <div class="campo-numerico">
+                    <input id="edadAproximada"
+                           type="text"
+                           th:field="*{edadAproximada}"
+                           th:classappend="${#fields.hasErrors('edadAproximada')} ? 'campo-invalido' : ''"
+                           th:aria-invalid="${#fields.hasErrors('edadAproximada')}"
+                           th:aria-describedby="${#fields.hasErrors('edadAproximada')} ? 'edadAproximada-error' : null"
+                           inputmode="decimal"
+                           placeholder="Ej: 0,5 o 2"
+                           pattern="(([0-9]|[12][0-9])(?:,[0-9])?|30(?:,0)?)"
+                           title="Usa coma para decimales, por ejemplo 0,5"
+                           data-edad-decimal
+                           data-min="0"
+                           data-max="30"
+                           required>
+                    <div class="controles-numero">
+                        <button type="button" data-stepper-increment aria-label="Aumentar edad">+</button>
+                        <button type="button" data-stepper-decrement aria-label="Disminuir edad">-</button>
+                    </div>
+                </div>
                 <span id="edadAproximada-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('edadAproximada')}"
-                      th:errors="*{edadAproximada}"></span>
+                      th:text="${#fields.errors('edadAproximada')[0]}"></span>
             </div>
 
             <div class="grupo-campo">
@@ -141,23 +148,27 @@
                           th:classappend="${#fields.hasErrors('descripcion')} ? 'campo-invalido' : ''"
                           th:aria-invalid="${#fields.hasErrors('descripcion')}"
                           th:aria-describedby="${#fields.hasErrors('descripcion')} ? 'descripcion-error' : null"
-                          maxlength="1000"
+                          maxlength="255"
+                          data-contador-caracteres="descripcion-contador"
                           placeholder="Describe el temperamento, historia y necesidades especiales de la mascota"
                           required></textarea>
+                <div class="contador-caracteres" id="descripcion-contador" aria-live="polite">
+                    0 / 255 caracteres
+                </div>
                 <span id="descripcion-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('descripcion')}"
-                      th:errors="*{descripcion}"></span>
+                      th:text="${#fields.errors('descripcion')[0]}"></span>
             </div>
         </div>
 
         <div class="acciones-registro">
-            <a class="boton boton-secundario" th:href="@{/}">Cancelar</a>
+            <a class="boton boton-secundario" th:href="@{/mascotas/gestion}">Cancelar</a>
             <button class="boton boton-primario" type="submit">Registrar mascota</button>
         </div>
     </form>
 
-    <a th:href="@{/}" class="volver-inicio">← Regresar al inicio</a>
 </main>
+<script th:src="@{/js/interacciones.js}"></script>
 </body>
 </html>
