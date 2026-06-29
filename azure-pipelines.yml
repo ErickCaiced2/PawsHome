@@ -33,18 +33,10 @@ stages:
         mavenVersionOption: 'Path'
         mavenDirectory: 'C:\Program Files\apache-maven-3.9.16'
 
-    # PASO 1: Copiar solo el .jar a la carpeta temporal de artefactos
-    - task: CopyFiles@2
-      displayName: 'Filtrar y copiar archivo .jar'
-      inputs:
-        SourceFolder: '$(System.DefaultWorkingDirectory)/pawshome/target'
-        Contents: '*.jar'
-        TargetFolder: '$(Build.ArtifactStagingDirectory)'
-
-    # PASO 2: Publicar el contenido de la carpeta temporal (donde ahora solo vive el .jar)
+    # MODIFICADO: Ahora solo busca y publica el archivo .jar ejecutable
     - task: PublishBuildArtifacts@1
       displayName: 'Guardar Artefacto Compilado (.jar)'
       inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        PathtoPublish: '$(System.DefaultWorkingDirectory)/pawshome/target/pawshome-0.0.1-SNAPSHOT.jar' # Usa asterisco si el nombre cambia: '$(System.DefaultWorkingDirectory)/pawshome/target/*.jar'
         ArtifactName: 'pawshome-package'
         publishLocation: 'Container'
