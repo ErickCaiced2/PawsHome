@@ -151,3 +151,35 @@ mvn test
 - **Lombok + Java 21:** el IDE (VSCode) puede mostrar falsos positivos ("cannot find symbol") para métodos generados por Lombok. La compilación con `mvn test-compile` es la fuente de verdad.
 - **Imágenes de mascotas:** si `imagenUrl` es null o vacío, se muestra un emoji placeholder (🐶 para perros, 🐱 para gatos).
 - **Sesión:** cookie `JSESSIONID`, se elimina al hacer logout.
+# 🐾 PawsHome - Sistema Web para Adopciones en Línea
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Spring--Boot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot">
+  <img src="https://img.shields.io/badge/Azure--DevOps-0078D7?style=for-the-badge&logo=azuredevops&logoColor=white" alt="Azure DevOps">
+  <img src="https://img.shields.io/badge/Java--17-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java 17">
+  <img src="https://img.shields.io/badge/Linux--Server-FCC624?style=for-the-badge&logo=linux&logoColor=black" alt="Linux">
+</p>
+
+---
+
+## 📊 Indicadores del Proyecto
+
+### Estado del Pipeline de Integración (CI)
+![Build Status](https://img.shields.io/badge/Azure_Pipeline-passing-success?style=flat-square&logo=azure-pipelines)
+![Deployment](https://img.shields.io/badge/Azure_App_Service-active-blue?style=flat-square&logo=microsoft-azure)
+
+### Distribución del Código (Métricas estimadas)
+![Gráfica de Tecnologías](https://quickchart.io/chart?c={type:'bar',data:{labels:['Backend','Base%20de%20Datos','DevOps','Frontend'],datasets:[{label:'Progreso%20%25',data:[90,85,100,75],backgroundColor:'rgba(54,%20162,%20235,%200.6)'}]}})
+
+---
+
+## 🗺️ Diagrama del Flujo de Automatización (CI/CD)
+
+```mermaid
+graph LR
+    A[Código Local] -->|Git Push| B(Repositorio Azure)
+    B -->|Trigger Automático| C{Pipeline CI}
+    C -->|Compilación exitosa .jar| D[Generación de Artefacto]
+    D -->|Release Trigger main| E{Pipeline CD}
+    E -->|Agente Local PipelinePaws| F[Despliegue Cloud]
+    F -->|Hosting| G[Azure App Service Linux]
