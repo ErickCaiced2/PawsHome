@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class DevDataInitializer implements CommandLineRunner {
 
     private static final String ADMIN_CORREO = "admin@pawshome.local";
+    private static final String USUARIO_CORREO = "usuario@pawshome.com";
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
@@ -24,6 +25,11 @@ public class DevDataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        crearAdministradorSiNoExiste();
+        crearUsuarioSiNoExiste();
+    }
+
+    private void crearAdministradorSiNoExiste() {
         if (usuarioRepository.findByCorreo(ADMIN_CORREO).isPresent()) {
             return;
         }
@@ -36,5 +42,20 @@ public class DevDataInitializer implements CommandLineRunner {
         admin.setActivo(true);
 
         usuarioRepository.save(admin);
+    }
+
+    private void crearUsuarioSiNoExiste() {
+        if (usuarioRepository.findByCorreo(USUARIO_CORREO).isPresent()) {
+            return;
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNombre("Usuario Adoptante");
+        usuario.setCorreo(USUARIO_CORREO);
+        usuario.setPasswordHash(passwordEncoder.encode("usuario123"));
+        usuario.setRol(RolUsuario.USUARIO);
+        usuario.setActivo(true);
+
+        usuarioRepository.save(usuario);
     }
 }
