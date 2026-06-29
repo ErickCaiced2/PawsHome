@@ -37,6 +37,6 @@ stages:
     - task: PublishBuildArtifacts@1
       displayName: 'Guardar Artefacto Compilado (.jar)'
       inputs:
-        PathtoPublish: '$(System.DefaultWorkingDirectory)/pawshome/target/pawshome-0.0.1-SNAPSHOT.jar' # Usa asterisco si el nombre cambia: '$(System.DefaultWorkingDirectory)/pawshome/target/*.jar'
+        PathtoPublish: '$(System.DefaultWorkingDirectory)/pawshome/target/*.jar'
         ArtifactName: 'pawshome-package'
         publishLocation: 'Container'
