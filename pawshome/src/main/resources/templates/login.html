@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar sesion | PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
+<body class="pagina-acceso">
+<main class="acceso-contenedor">
+    <section class="panel-imagen">
+        <img th:src="@{/images/acceso.jpg}" alt="Mascota feliz">
+        <a class="marca marca-clara" th:href="@{/}" aria-label="PawsHome">
+            <span class="marca-icono" aria-hidden="true">P</span>
+            <span>PawsHome</span>
+        </a>
+        <blockquote>
+            Adoptar es un acto de amor responsable
+            <cite>Comunidad PawsHome</cite>
+        </blockquote>
+    </section>
+
+    <section class="panel-formulario">
+        <div class="formulario-acceso">
+            <a class="marca marca-movil" th:href="@{/}" aria-label="PawsHome">
+                <span class="marca-icono" aria-hidden="true">P</span>
+                <span>PawsHome</span>
+            </a>
+            <h1>Bienvenido de vuelta</h1>
+            <p>Inicia sesion para continuar con la gestion de mascotas.</p>
+
+            <div th:if="${param.error}" class="mensaje-error" role="alert">
+                Correo o contrasena incorrectos.
+            </div>
+            <div th:if="${param.logout}" class="mensaje-info" role="status">
+                Sesion cerrada exitosamente.
+            </div>
+
+            <form id="formularioInicioSesion" th:action="@{/login}" method="post">
+                <div class="grupo-campo">
+                    <label for="username">Correo electronico</label>
+                    <input type="email"
+                           id="username"
+                           name="username"
+                           placeholder="correo@ejemplo.com"
+                           autocomplete="username"
+                           required
+                           autofocus>
+                </div>
+                <div class="grupo-campo">
+                    <label for="password">Contrasena</label>
+                    <div class="campo-con-boton">
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               placeholder="••••••••"
+                               autocomplete="current-password"
+                               required>
+                        <button type="button"
+                                class="mostrar-contrasena"
+                                data-toggle-password="password"
+                                aria-label="Mostrar contrasena"
+                                aria-pressed="false">
+                            <svg class="icono-ojo" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path class="ojo-contorno" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"></path>
+                                <circle class="ojo-pupila" cx="12" cy="12" r="3"></circle>
+                                <path class="ojo-cerrado" d="M4 4l16 16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <a class="enlace-auxiliar" href="#" data-proximamente>Olvidaste tu contrasena?</a>
+                </div>
+                <button type="submit" class="boton boton-primario ancho-completo">Ingresar</button>
+            </form>
+
+            <p class="volver-inicio"><a th:href="@{/}">← Regresar al inicio</a></p>
+        </div>
+    </section>
+</main>
+<div class="aviso-proximamente" id="avisoProximamente" role="status" aria-live="polite">Funcionalidad proximamente</div>
+<script th:src="@{/js/interacciones.js}"></script>
+</body>
+</html>

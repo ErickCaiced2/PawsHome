@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar mascota | PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+    <link rel="stylesheet" th:href="@{/css/registro-mascota.css}">
+</head>
+<body class="pagina-registro-mascota">
+<main class="registro-contenedor">
+    <header class="registro-encabezado">
+        <a class="marca" th:href="@{/}" aria-label="PawsHome">
+            <span class="marca-icono" aria-hidden="true">P</span>
+            <span>PawsHome</span>
+        </a>
+        <h1>Registrar mascota</h1>
+        <p>Completa la informacion basica para publicar una mascota disponible.</p>
+    </header>
+
+    <form class="tarjeta-formulario"
+          th:action="@{/mascotas}"
+          th:object="${mascotaForm}"
+          method="post"
+          novalidate>
+        <h2>Datos de la mascota</h2>
+
+        <div class="resumen-errores" th:if="${#fields.hasAnyErrors()}">
+            Corrige los errores indicados antes de continuar.
+        </div>
+
+        <div class="rejilla-formulario">
+            <div class="grupo-campo">
+                <label for="nombre">Nombre</label>
+                <input id="nombre"
+                       type="text"
+                       th:field="*{nombre}"
+                       th:classappend="${#fields.hasErrors('nombre')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('nombre')}"
+                       th:aria-describedby="${#fields.hasErrors('nombre')} ? 'nombre-error' : null"
+                       maxlength="50"
+                       oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\-]/g,'')"
+                       required>
+                <span id="nombre-error"
+                      class="error-campo"
+                      th:if="${#fields.hasErrors('nombre')}"
+                      th:errors="*{nombre}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="especie">Especie</label>
+                <input id="especie"
+                       type="text"
+                       th:field="*{especie}"
+                       th:classappend="${#fields.hasErrors('especie')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('especie')}"
+                       th:aria-describedby="${#fields.hasErrors('especie')} ? 'especie-error' : null"
+                       maxlength="40"
+                       oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g,'')"
+                       required>
+                <span id="especie-error"
+                      class="error-campo"
+                      th:if="${#fields.hasErrors('especie')}"
+                      th:errors="*{especie}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="raza">Raza <span>(opcional)</span></label>
+                <input id="raza"
+                       type="text"
+                       th:field="*{raza}"
+                       th:classappend="${#fields.hasErrors('raza')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('raza')}"
+                       th:aria-describedby="${#fields.hasErrors('raza')} ? 'raza-error' : null"
+                       maxlength="60"
+                       oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\-]/g,'')">
+                <span id="raza-error"
+                      class="error-campo"
+                      th:if="${#fields.hasErrors('raza')}"
+                      th:errors="*{raza}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="edadAproximada">Edad aproximada (en años)</label>
+                <div class="campo-numerico">
+                    <input id="edadAproximada"
+                           type="text"
+                           th:field="*{edadAproximada}"
+                           th:classappend="${#fields.hasErrors('edadAproximada')} ? 'campo-invalido' : ''"
+                           th:aria-invalid="${#fields.hasErrors('edadAproximada')}"
+                           th:aria-describedby="${#fields.hasErrors('edadAproximada')} ? 'edadAproximada-error' : null"
+                           inputmode="decimal"
+                           placeholder="Ej: 0,5 o 2"
+                           pattern="(([0-9]|[12][0-9])(?:,[0-9])?|30(?:,0)?)"
+                           title="Usa coma para decimales, por ejemplo 0,5"
+                           data-edad-decimal
+                           data-min="0"
+                           data-max="30"
+                           required>
+                    <div class="controles-numero">
+                        <button type="button" data-stepper-increment aria-label="Aumentar edad">+</button>
+                        <button type="button" data-stepper-decrement aria-label="Disminuir edad">-</button>
+                    </div>
+                </div>
+                <span id="edadAproximada-error"
+                      class="error-campo"
+                      th:if="${#fields.hasErrors('edadAproximada')}"
+                      th:text="${#fields.errors('edadAproximada')[0]}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="sexo">Sexo</label>
+                <select id="sexo"
+                        th:field="*{sexo}"
+                        th:classappend="${#fields.hasErrors('sexo')} ? 'campo-invalido' : ''"
+                        th:aria-invalid="${#fields.hasErrors('sexo')}"
+                        th:aria-describedby="${#fields.hasErrors('sexo')} ? 'sexo-error' : null"
+                        required>
+                    <option value="">-- Selecciona --</option>
+                    <option value="Macho">Macho</option>
+                    <option value="Hembra">Hembra</option>
+                </select>
+                <span id="sexo-error"
+                      class="error-campo"
+                      th:if="${#fields.hasErrors('sexo')}"
+                      th:errors="*{sexo}"></span>
+            </div>
+
+            <div class="grupo-campo">
+                <label for="imagenUrl">URL de imagen <span>(opcional)</span></label>
+                <input id="imagenUrl"
+                       type="url"
+                       th:field="*{imagenUrl}"
+                       th:classappend="${#fields.hasErrors('imagenUrl')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('imagenUrl')}"
+                       th:aria-describedby="${#fields.hasErrors('imagenUrl')} ? 'imagenUrl-error' : null"
+                       maxlength="255">
+                <span id="imagenUrl-error"
+                      class="error-campo"
+                      th:if="${#fields.hasErrors('imagenUrl')}"
+                      th:errors="*{imagenUrl}"></span>
+            </div>
+
+            <div class="grupo-campo grupo-campo-ancho">
+                <label for="descripcion">Descripcion</label>
+                <textarea id="descripcion"
+                          th:field="*{descripcion}"
+                          th:classappend="${#fields.hasErrors('descripcion')} ? 'campo-invalido' : ''"
+                          th:aria-invalid="${#fields.hasErrors('descripcion')}"
+                          th:aria-describedby="${#fields.hasErrors('descripcion')} ? 'descripcion-error' : null"
+                          maxlength="255"
+                          data-contador-caracteres="descripcion-contador"
+                          placeholder="Describe el temperamento, historia y necesidades especiales de la mascota"
+                          required></textarea>
+                <div class="contador-caracteres" id="descripcion-contador" aria-live="polite">
+                    0 / 255 caracteres
+                </div>
+                <span id="descripcion-error"
+                      class="error-campo"
+                      th:if="${#fields.hasErrors('descripcion')}"
+                      th:text="${#fields.errors('descripcion')[0]}"></span>
+            </div>
+        </div>
+
+        <div class="acciones-registro">
+            <a class="boton boton-secundario" th:href="@{/mascotas/gestion}">Cancelar</a>
+            <button class="boton boton-primario" type="submit">Registrar mascota</button>
+        </div>
+    </form>
+
+</main>
+<script th:src="@{/js/interacciones.js}"></script>
+</body>
+</html>

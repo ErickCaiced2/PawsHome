@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso denegado | PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+    <link rel="stylesheet" th:href="@{/css/acceso-denegado.css}">
+</head>
+<body class="pagina-denegada">
+<main class="denegado-contenedor">
+    <section class="denegado-panel">
+        <a class="marca" th:href="@{/}" aria-label="PawsHome">
+            <span class="marca-icono" aria-hidden="true">P</span>
+            <span>PawsHome</span>
+        </a>
+
+        <div class="denegado-contenido">
+            <span class="denegado-estado" aria-hidden="true">403</span>
+            <h1>Acceso denegado</h1>
+            <p>No tienes permisos para realizar esta accion.</p>
+            <p class="denegado-ayuda">Solo los administradores de refugio pueden registrar y gestionar mascotas.</p>
+
+            <div class="denegado-acciones">
+                <a th:href="@{/}" class="boton boton-primario">Volver al inicio</a>
+                <a th:href="@{/mascotas/disponibles}" class="boton boton-secundario">Ver mascotas</a>
+            </div>
+        </div>
+    </section>
+
+    <aside class="denegado-imagen" aria-hidden="true">
+        <img th:src="@{/images/acceso.jpg}" alt="">
+    </aside>
+</main>
+</body>
+</html>

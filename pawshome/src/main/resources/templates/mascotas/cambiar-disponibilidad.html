@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambiar disponibilidad | PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+    <link rel="stylesheet" th:href="@{/css/registro-mascota.css}">
+</head>
+<body class="pagina-registro-mascota">
+<main class="registro-contenedor">
+
+    <header class="registro-encabezado">
+        <a class="marca" th:href="@{/}" aria-label="PawsHome">
+            <span class="marca-icono" aria-hidden="true">🐾</span>
+            <span>PawsHome</span>
+        </a>
+        <h1>Cambiar disponibilidad</h1>
+        <p>Confirma el nuevo estado de la mascota antes de continuar.</p>
+    </header>
+
+    <!-- Datos actuales de la mascota -->
+    <div class="tarjeta-formulario" style="margin-bottom: 1rem;">
+        <h2>Datos de la mascota</h2>
+        <div class="rejilla-formulario">
+            <div class="grupo-campo">
+                <label>Nombre</label>
+                <input type="text" th:value="${mascota.nombre}" disabled>
+            </div>
+            <div class="grupo-campo">
+                <label>Especie</label>
+                <input type="text" th:value="${mascota.especie}" disabled>
+            </div>
+            <div class="grupo-campo grupo-campo-ancho">
+                <label>Estado actual</label>
+                <input type="text" th:value="${mascota.estadoDisponibilidad}" disabled
+                       style="font-weight: 700; color: var(--primario);">
+            </div>
+        </div>
+    </div>
+
+    <!-- Advertencia -->
+    <div style="padding: .85rem 1rem; background: rgba(245,166,35,.12); border: 1.5px solid rgba(245,166,35,.4);
+                border-radius: .75rem; font-size: .9rem; margin-bottom: 1rem; color: #7a5200;">
+        ⚠️ Esta accion cambiara el estado de la mascota de forma inmediata.
+        Solo los animales en estado <strong>DISPONIBLE</strong> aparecen en el catalogo publico.
+    </div>
+
+    <!-- Formulario de confirmacion -->
+    <form class="tarjeta-formulario"
+          th:action="@{/mascotas/{id}/disponibilidad(id=${mascota.id})}"
+          method="post">
+
+        <h2>Selecciona el nuevo estado</h2>
+
+        <div class="rejilla-formulario">
+            <div class="grupo-campo grupo-campo-ancho">
+                <label for="nuevoEstado">Nuevo estado</label>
+                <select id="nuevoEstado" name="nuevoEstado"
+                        style="width:100%; padding:.6rem .75rem; border:1.5px solid var(--borde);
+                               border-radius:.6rem; font-size:1rem; background:#fff; cursor:pointer;">
+                    <option th:each="estado : ${estados}"
+                            th:value="${estado}"
+                            th:text="${estado}"
+                            th:selected="${estado == nuevoEstado}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="acciones-registro">
+            <a class="boton boton-secundario" th:href="@{/mascotas/gestion}">Cancelar</a>
+            <button class="boton boton-primario" type="submit">Confirmar cambio</button>
+        </div>
+    </form>
+
+    <a th:href="@{/mascotas/gestion}" class="volver-inicio">← Volver a gestion</a>
+
+</main>
+<script th:src="@{/js/interacciones.js}"></script>
+</body>
+</html>

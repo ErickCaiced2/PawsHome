@@ -1,0 +1,156 @@
+.pagina-registro-mascota {
+    min-height: 100vh;
+    padding: 3rem 1rem;
+    background:
+        radial-gradient(circle at top left, rgba(245, 166, 35, .18), transparent 32rem),
+        var(--fondo);
+}
+
+.registro-contenedor {
+    width: min(100%, 720px);
+    margin: auto;
+}
+
+.registro-encabezado {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.registro-encabezado .marca {
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.4rem;
+}
+
+.registro-encabezado h1 {
+    margin-bottom: .25rem;
+    font-size: 1.9rem;
+}
+
+.registro-encabezado p {
+    margin: 0;
+    color: var(--texto-suave);
+}
+
+.tarjeta-formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px rgba(200, 90, 42, .08);
+}
+
+.tarjeta-formulario h2 {
+    margin-bottom: 0;
+    font-size: 1.15rem;
+}
+
+.rejilla-formulario {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.grupo-campo-ancho {
+    grid-column: 1 / -1;
+}
+
+.resumen-errores {
+    padding: .85rem 1rem;
+    color: var(--error);
+    background: rgba(212, 24, 61, .08);
+    border: 1.5px solid rgba(212, 24, 61, .18);
+    border-radius: .75rem;
+    font-size: .9rem;
+    font-weight: 700;
+}
+
+.contador-caracteres {
+    align-self: flex-end;
+    min-height: 1rem;
+    color: var(--texto-suave);
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.campo-numerico {
+    position: relative;
+}
+
+.campo-numerico input {
+    padding-right: 3.4rem;
+}
+
+.controles-numero {
+    position: absolute;
+    top: .35rem;
+    right: .45rem;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: .15rem;
+    height: calc(100% - .7rem);
+}
+
+.controles-numero button {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    min-height: 0;
+    padding: 0;
+    color: var(--primario);
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: .35rem;
+    cursor: pointer;
+    font-size: .8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.controles-numero button:hover {
+    background: var(--suave);
+}
+
+.acciones-registro {
+    display: flex;
+    gap: .75rem;
+    margin-top: .5rem;
+}
+
+.acciones-registro .boton {
+    flex: 1;
+}
+
+.volver-inicio {
+    display: block;
+    margin: 1.5rem auto 0;
+    color: var(--texto-suave);
+    text-align: center;
+    font-size: .875rem;
+    font-weight: 700;
+}
+
+.volver-inicio:hover {
+    color: var(--primario);
+}
+
+@media (max-width: 640px) {
+    .pagina-registro-mascota {
+        padding: 2rem .75rem;
+    }
+
+    .tarjeta-formulario {
+        padding: 1.25rem;
+    }
+
+    .rejilla-formulario {
+        grid-template-columns: 1fr;
+    }
+
+    .acciones-registro {
+        flex-direction: column-reverse;
+    }
+}
