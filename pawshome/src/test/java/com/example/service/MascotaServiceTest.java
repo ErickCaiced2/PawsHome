@@ -43,7 +43,7 @@ class MascotaServiceTest {
     void setUp() {
         formValido = new MascotaForm(
                 "Bobby", "Perro", "Labrador",
-                "3 años", "Macho", "Muy amigable", "http://img.com/bobby.jpg"
+                3.0, "Macho", "Muy amigable", "http://img.com/bobby.jpg"
         );
 
         administrador = new Usuario();

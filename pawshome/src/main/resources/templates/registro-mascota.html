@@ -38,7 +38,8 @@
                        th:classappend="${#fields.hasErrors('nombre')} ? 'campo-invalido' : ''"
                        th:aria-invalid="${#fields.hasErrors('nombre')}"
                        th:aria-describedby="${#fields.hasErrors('nombre')} ? 'nombre-error' : null"
-                       maxlength="80"
+                       maxlength="50"
+                       oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\-]/g,'')"
                        required>
                 <span id="nombre-error"
                       class="error-campo"
@@ -54,7 +55,8 @@
                        th:classappend="${#fields.hasErrors('especie')} ? 'campo-invalido' : ''"
                        th:aria-invalid="${#fields.hasErrors('especie')}"
                        th:aria-describedby="${#fields.hasErrors('especie')} ? 'especie-error' : null"
-                       maxlength="50"
+                       maxlength="40"
+                       oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g,'')"
                        required>
                 <span id="especie-error"
                       class="error-campo"
@@ -70,7 +72,8 @@
                        th:classappend="${#fields.hasErrors('raza')} ? 'campo-invalido' : ''"
                        th:aria-invalid="${#fields.hasErrors('raza')}"
                        th:aria-describedby="${#fields.hasErrors('raza')} ? 'raza-error' : null"
-                       maxlength="80">
+                       maxlength="60"
+                       oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\-]/g,'')">
                 <span id="raza-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('raza')}"
@@ -78,14 +81,19 @@
             </div>
 
             <div class="grupo-campo">
-                <label for="edadAproximada">Edad aproximada</label>
+                <label for="edadAproximada">Edad aproximada (en años)</label>
                 <input id="edadAproximada"
-                       type="text"
+                       type="number"
                        th:field="*{edadAproximada}"
                        th:classappend="${#fields.hasErrors('edadAproximada')} ? 'campo-invalido' : ''"
                        th:aria-invalid="${#fields.hasErrors('edadAproximada')}"
                        th:aria-describedby="${#fields.hasErrors('edadAproximada')} ? 'edadAproximada-error' : null"
-                       maxlength="50"
+                       min="0"
+                       max="30"
+                       step="0.1"
+                       inputmode="decimal"
+                       placeholder="Ej: 2 o 0.5"
+                       oninput="if(this.value>30)this.value=30;if(this.value<0)this.value=0"
                        required>
                 <span id="edadAproximada-error"
                       class="error-campo"
@@ -95,14 +103,16 @@
 
             <div class="grupo-campo">
                 <label for="sexo">Sexo</label>
-                <input id="sexo"
-                       type="text"
-                       th:field="*{sexo}"
-                       th:classappend="${#fields.hasErrors('sexo')} ? 'campo-invalido' : ''"
-                       th:aria-invalid="${#fields.hasErrors('sexo')}"
-                       th:aria-describedby="${#fields.hasErrors('sexo')} ? 'sexo-error' : null"
-                       maxlength="20"
-                       required>
+                <select id="sexo"
+                        th:field="*{sexo}"
+                        th:classappend="${#fields.hasErrors('sexo')} ? 'campo-invalido' : ''"
+                        th:aria-invalid="${#fields.hasErrors('sexo')}"
+                        th:aria-describedby="${#fields.hasErrors('sexo')} ? 'sexo-error' : null"
+                        required>
+                    <option value="">-- Selecciona --</option>
+                    <option value="Macho">Macho</option>
+                    <option value="Hembra">Hembra</option>
+                </select>
                 <span id="sexo-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('sexo')}"
@@ -131,6 +141,8 @@
                           th:classappend="${#fields.hasErrors('descripcion')} ? 'campo-invalido' : ''"
                           th:aria-invalid="${#fields.hasErrors('descripcion')}"
                           th:aria-describedby="${#fields.hasErrors('descripcion')} ? 'descripcion-error' : null"
+                          maxlength="1000"
+                          placeholder="Describe el temperamento, historia y necesidades especiales de la mascota"
                           required></textarea>
                 <span id="descripcion-error"
                       class="error-campo"

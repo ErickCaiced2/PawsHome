@@ -65,7 +65,7 @@ class MascotaControllerTest {
                         .param("nombre", "Luna")
                         .param("especie", "Perro")
                         .param("raza", "Mestiza")
-                        .param("edadAproximada", "2 años")
+                        .param("edadAproximada", "2")
                         .param("sexo", "Hembra")
                         .param("descripcion", "Tranquila y cariñosa")
                         .param("imagenUrl", "https://example.com/luna.jpg"))
