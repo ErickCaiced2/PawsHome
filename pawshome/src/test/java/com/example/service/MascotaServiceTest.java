@@ -43,7 +43,7 @@ class MascotaServiceTest {
     void setUp() {
         formValido = new MascotaForm(
                 "Bobby", "Perro", "Labrador",
-                3.0, "Macho", "Muy amigable", "http://img.com/bobby.jpg"
+                "3", "Macho", "Muy amigable", "http://img.com/bobby.jpg"
         );
 
         administrador = new Usuario();
@@ -125,6 +125,16 @@ class MascotaServiceTest {
         Mascota resultado = mascotaService.registrarMascota(formValido, administrador);
 
         assertThat(resultado.getEstadoDisponibilidad()).isEqualTo(EstadoMascota.DISPONIBLE);
+    }
+
+    @Test
+    void registrarMascota_conEdadDecimalMantieneComaEnTexto() {
+        formValido.setEdadAproximada("0,5");
+        when(mascotaRepository.save(any(Mascota.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Mascota resultado = mascotaService.registrarMascota(formValido, administrador);
+
+        assertThat(resultado.getEdadAproximada()).startsWith("0,5 ");
     }
 
     @Test

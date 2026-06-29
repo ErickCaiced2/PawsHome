@@ -28,7 +28,7 @@ public class MascotaFormTest {
                 "Bobby",
                 "Perro",
                 "Labrador",
-                3.0,
+                "3",
                 "Macho",
                 "Un perro muy amigable",
                 "http://example.com/image.jpg"
@@ -65,7 +65,7 @@ public class MascotaFormTest {
     @Test
     public void testEdadNegativaFalla() {
         MascotaForm form = new MascotaForm(
-                "Luna", "Gato", null, -1.0, "Hembra", "Descripción válida aquí", null
+                "Luna", "Gato", null, "-1", "Hembra", "Descripción válida aquí", null
         );
         Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
         Set<String> fields = violations.stream()
@@ -77,7 +77,7 @@ public class MascotaFormTest {
     @Test
     public void testEdadSuperiorA30Falla() {
         MascotaForm form = new MascotaForm(
-                "Luna", "Gato", null, 31.0, "Hembra", "Descripción válida aquí", null
+                "Luna", "Gato", null, "31", "Hembra", "Descripción válida aquí", null
         );
         Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
         Set<String> fields = violations.stream()
@@ -89,7 +89,7 @@ public class MascotaFormTest {
     @Test
     public void testSexoInvalidoFalla() {
         MascotaForm form = new MascotaForm(
-                "Max", "Perro", null, 2.0, "MACHO", "Descripción válida aquí", null
+                "Max", "Perro", null, "2", "MACHO", "Descripción válida aquí", null
         );
         Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
         Set<String> fields = violations.stream()
@@ -101,12 +101,40 @@ public class MascotaFormTest {
     @Test
     public void testUrlImagenInvalidaFalla() {
         MascotaForm form = new MascotaForm(
-                "Max", "Perro", null, 2.0, "Macho", "Descripción válida aquí", "no-es-una-url"
+                "Max", "Perro", null, "2", "Macho", "Descripción válida aquí", "no-es-una-url"
         );
         Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
         Set<String> fields = violations.stream()
                 .map(v -> v.getPropertyPath().toString())
                 .collect(Collectors.toSet());
         assertTrue(fields.contains("imagenUrl"), "Debería fallar por URL de imagen inválida");
+    }
+
+    @Test
+    public void testEdadConComaDecimalEsValida() {
+        MascotaForm form = new MascotaForm(
+                "Milo", "Gato", null, "0,5", "Macho", "Descripción válida aquí", null
+        );
+
+        Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
+        Set<String> fields = violations.stream()
+                .map(v -> v.getPropertyPath().toString())
+                .collect(Collectors.toSet());
+
+        assertFalse(fields.contains("edadAproximada"), "La edad 0,5 debería ser válida");
+    }
+
+    @Test
+    public void testEdadConPuntoDecimalFalla() {
+        MascotaForm form = new MascotaForm(
+                "Milo", "Gato", null, "0.5", "Macho", "Descripción válida aquí", null
+        );
+
+        Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
+        Set<String> fields = violations.stream()
+                .map(v -> v.getPropertyPath().toString())
+                .collect(Collectors.toSet());
+
+        assertTrue(fields.contains("edadAproximada"), "La edad con punto decimal debería fallar");
     }
 }

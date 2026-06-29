@@ -68,6 +68,52 @@
     font-weight: 700;
 }
 
+.contador-caracteres {
+    align-self: flex-end;
+    min-height: 1rem;
+    color: var(--texto-suave);
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.campo-numerico {
+    position: relative;
+}
+
+.campo-numerico input {
+    padding-right: 3.4rem;
+}
+
+.controles-numero {
+    position: absolute;
+    top: .35rem;
+    right: .45rem;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: .15rem;
+    height: calc(100% - .7rem);
+}
+
+.controles-numero button {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    min-height: 0;
+    padding: 0;
+    color: var(--primario);
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: .35rem;
+    cursor: pointer;
+    font-size: .8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.controles-numero button:hover {
+    background: var(--suave);
+}
+
 .acciones-registro {
     display: flex;
     gap: .75rem;

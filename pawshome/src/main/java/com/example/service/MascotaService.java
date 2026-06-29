@@ -63,10 +63,9 @@ public class MascotaService {
         mascota.setNombre(form.getNombre());
         mascota.setEspecie(form.getEspecie());
         mascota.setRaza(form.getRaza());
-        double edad = form.getEdadAproximada();
-        mascota.setEdadAproximada(edad == Math.floor(edad)
-                ? (int) edad + " años"
-                : edad + " años");
+        String edadTexto = form.getEdadAproximada().trim();
+        double edad = Double.parseDouble(edadTexto.replace(",", "."));
+        mascota.setEdadAproximada(edad == 1.0 ? "1 año" : edadTexto + " años");
         mascota.setSexo(form.getSexo());
         mascota.setDescripcion(form.getDescripcion());
         mascota.setImagenUrl(form.getImagenUrl());
