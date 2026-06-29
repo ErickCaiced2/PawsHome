@@ -1,33 +1,42 @@
 trigger:
 - main
+- Develop
+- erick-branch
 
 pool:
-  name: 'PipelinePaws' # Tu agente local que ya funciona perfectamente
+  name: 'PipelinePaws' # Tu agente local en Windows
 
 variables:
-  # Nombre de la conexión de servicio que creaste en el Paso 2
   azureServiceConnection: 'ConexionAzureAppService'
-  # El nombre exacto de tu Web App en el portal de Azure
-  webAppName: 'pawshome-app'
+  webAppName: 'PawsHome'
 
-steps:
-# 1. Compilar el código y generar el archivo .war
-- task: Maven@4
-  displayName: 'Compilar y empaquetar WAR (Spring Boot)'
-  inputs:
-    mavenPomFile: 'pawshome/pom.xml'
-    options: '-DskipTests' 
-    publishJUnitResults: false
-    javaHomeOption: 'JDKVersion'
-    mavenVersionOption: 'Path'
-    mavenDirectory: 'C:\Program Files\apache-maven-3.9.16'
+stages:
 
-# 2. Desplegar el archivo .war en Azure App Service
-- task: AzureWebApp@1
-  displayName: 'Desplegar en Azure Web App'
-  inputs:
-    azureSubscription: '$(azureServiceConnection)'
-    appType: 'webAppLinux' # Cambia a 'webApp' si elegiste Windows en el portal
-    appName: 'PawsHome'
-    # Busca el archivo .war generado por Maven dentro de la carpeta target
-    package: '$(System.DefaultWorkingDirectory)/pawshome/target/pawshome-*.jar'
+# ==========================================
+# ETAPA ÚNICA: INTEGRACIÓN CONTINUA (CI)
+# ==========================================
+- stage: Build
+  displayName: 'Etapa de Compilación (CI)'
+  jobs:
+  - job: BuildJavaJob
+    displayName: 'Compilar Spring Boot'
+    steps:
+    - task: Maven@4
+      displayName: 'Maven clean package'
+      inputs:
+        mavenPomFile: 'pawshome/pom.xml'
+        goals: 'clean package'
+        options: '-DskipTests' 
+        publishJUnitResults: false
+        javaHomeOption: 'Path'
+        jdkDirectory: 'C:\Program Files\Java\jdk-26.0.1'
+        mavenVersionOption: 'Path'
+        mavenDirectory: 'C:\Program Files\apache-maven-3.9.16'
+
+    # MODIFICADO: Ahora solo busca y publica el archivo .jar ejecutable
+    - task: PublishBuildArtifacts@1
+      displayName: 'Guardar Artefacto Compilado (.jar)'
+      inputs:
+        PathtoPublish: '$(System.DefaultWorkingDirectory)/pawshome/target/pawshome-0.0.1-SNAPSHOT.jar' # Usa asterisco si el nombre cambia: '$(System.DefaultWorkingDirectory)/pawshome/target/*.jar'
+        ArtifactName: 'pawshome-package'
+        publishLocation: 'Container'
