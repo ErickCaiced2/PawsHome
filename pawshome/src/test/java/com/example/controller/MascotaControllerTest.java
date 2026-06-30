@@ -9,9 +9,11 @@ import com.example.repository.UsuarioRepository;
 import com.example.service.MascotaService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Proxy;
 import java.time.LocalDateTime;
@@ -21,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -60,20 +63,56 @@ class MascotaControllerTest {
 
     @Test
     void registrarMascota_valida_redirigeAGestionYRegistra() throws Exception {
-        mockMvc.perform(post("/mascotas")
+        MockMultipartFile img1 = new MockMultipartFile("imagenes", "img1.jpg", "image/jpeg", "data1".getBytes());
+        MockMultipartFile img2 = new MockMultipartFile("imagenes", "img2.jpg", "image/jpeg", "data2".getBytes());
+        MockMultipartFile img3 = new MockMultipartFile("imagenes", "img3.jpg", "image/jpeg", "data3".getBytes());
+
+        mockMvc.perform(multipart("/mascotas")
+                        .file(img1).file(img2).file(img3)
                         .principal(() -> "admin@example.com")
                         .param("nombre", "Luna")
                         .param("especie", "Perro")
                         .param("raza", "Mestiza")
                         .param("edadAproximada", "2")
                         .param("sexo", "Hembra")
-                        .param("descripcion", "Tranquila y cariñosa")
-                        .param("imagenUrl", "https://example.com/luna.jpg"))
+                        .param("descripcion", "Tranquila y muy cariñosa"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/mascotas/gestion"));
 
         assertNotNull(mascotaService.form.get());
         assertSame(admin, mascotaService.administrador.get());
+    }
+
+    @Test
+    void registrarMascota_sinImagenes_vuelveAlFormularioConError() throws Exception {
+        mockMvc.perform(post("/mascotas")
+                        .principal(() -> "admin@example.com")
+                        .param("nombre", "Luna")
+                        .param("especie", "Perro")
+                        .param("edadAproximada", "2")
+                        .param("sexo", "Hembra")
+                        .param("descripcion", "Tranquila y muy cariñosa"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("registro-mascota"))
+                .andExpect(model().attributeExists("imagenError"));
+    }
+
+    @Test
+    void registrarMascota_menosDeTresImagenes_vuelveAlFormularioConError() throws Exception {
+        MockMultipartFile img1 = new MockMultipartFile("imagenes", "img1.jpg", "image/jpeg", "data".getBytes());
+        MockMultipartFile img2 = new MockMultipartFile("imagenes", "img2.jpg", "image/jpeg", "data".getBytes());
+
+        mockMvc.perform(multipart("/mascotas")
+                        .file(img1).file(img2)
+                        .principal(() -> "admin@example.com")
+                        .param("nombre", "Luna")
+                        .param("especie", "Perro")
+                        .param("edadAproximada", "2")
+                        .param("sexo", "Hembra")
+                        .param("descripcion", "Tranquila y muy cariñosa"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("registro-mascota"))
+                .andExpect(model().attributeExists("imagenError"));
     }
 
     @Test
@@ -138,10 +177,10 @@ class MascotaControllerTest {
         final AtomicReference<MascotaForm> form = new AtomicReference<>();
         final AtomicReference<Usuario> administrador = new AtomicReference<>();
 
-        CapturingMascotaService() { super(null); }
+        CapturingMascotaService() { super(null, null, null); }
 
         @Override
-        public Mascota registrarMascota(MascotaForm form, Usuario administrador) {
+        public Mascota registrarMascota(MascotaForm form, List<MultipartFile> imagenes, Usuario administrador) {
             this.form.set(form);
             this.administrador.set(administrador);
             return new Mascota();
