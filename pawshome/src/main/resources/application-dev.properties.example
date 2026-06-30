@@ -4,8 +4,12 @@ spring.thymeleaf.cache=false
 spring.datasource.url=jdbc:sqlserver://pawshomesql.database.windows.net:1433;database=petconnect_db;encrypt=true;trustServerCertificate=false;loginTimeout=30;
 spring.datasource.driver-class-name=com.microsoft.sqlserver.jdbc.SQLServerDriver
 spring.datasource.username=sqladmin
-spring.datasource.password=@dmin123
+spring.datasource.password=TU_PASSWORD_AQUI
 
 spring.jpa.database-platform=org.hibernate.dialect.SQLServerDialect
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
+
+# Azure Blob Storage
+azure.storage.connection-string=DefaultEndpointsProtocol=https;AccountName=pawssources;AccountKey=TU_CLAVE_AQUI;EndpointSuffix=core.windows.net
+azure.storage.container-name=mascotas
