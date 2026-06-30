@@ -19,7 +19,7 @@
         <div class="menu-navegacion" id="enlacesNavegacion">
             <div class="enlaces-centro">
                 <a th:href="@{/}">Inicio</a>
-                <a class="activo" th:href="@{/mascotas/disponibles}">Mascotas</a>
+                <a class="activo" th:href="@{/catalogo}">Mascotas</a>
                 <a sec:authorize="hasRole('ADMINISTRADOR_REFUGIO')" th:href="@{/mascotas/gestion}">Mi gestion</a>
             </div>
             <div class="acciones-usuario">
@@ -41,6 +41,35 @@
                 <p>Estas mascotas buscan un hogar lleno de amor.</p>
             </div>
         </div>
+
+        <!-- Formulario de búsqueda -->
+        <form class="formulario-busqueda" th:action="@{/catalogo}" method="get">
+            <input type="text"
+                   name="nombre"
+                   placeholder="Buscar por nombre..."
+                   th:value="${filtro?.nombre}"
+                   maxlength="50">
+            <select name="especie">
+                <option value="">Todas las especies</option>
+                <option value="Perro"  th:selected="${filtro?.especie == 'Perro'}">Perro</option>
+                <option value="Gato"   th:selected="${filtro?.especie == 'Gato'}">Gato</option>
+                <option value="Conejo" th:selected="${filtro?.especie == 'Conejo'}">Conejo</option>
+                <option value="Ave"    th:selected="${filtro?.especie == 'Ave'}">Ave</option>
+                <option value="Otro"   th:selected="${filtro?.especie == 'Otro'}">Otro</option>
+            </select>
+            <select name="sexo">
+                <option value="">Cualquier sexo</option>
+                <option value="Macho"  th:selected="${filtro?.sexo == 'Macho'}">Macho</option>
+                <option value="Hembra" th:selected="${filtro?.sexo == 'Hembra'}">Hembra</option>
+            </select>
+            <input type="text"
+                   name="raza"
+                   placeholder="Raza (opcional)..."
+                   th:value="${filtro?.raza}"
+                   maxlength="60">
+            <button class="boton boton-primario" type="submit">Buscar</button>
+            <a class="boton boton-secundario" th:href="@{/catalogo}">Limpiar</a>
+        </form>
 
         <!-- Estado vacío -->
         <div th:if="${#lists.isEmpty(mascotas)}" style="text-align:center; padding: 4rem 1rem;">
