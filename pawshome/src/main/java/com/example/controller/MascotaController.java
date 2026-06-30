@@ -1,5 +1,6 @@
 package com.example.controller;
 
+import com.example.dto.MascotaFiltroDTO;
 import com.example.dto.MascotaForm;
 import com.example.exception.MascotaNoEncontradaException;
 import com.example.model.EstadoMascota;
@@ -77,8 +78,14 @@ public class MascotaController {
     }
 
     @GetMapping("/disponibles")
-    public String listarDisponibles(Model model) {
-        model.addAttribute("mascotas", mascotaService.listarDisponibles());
+    public String listarDisponibles(@RequestParam(required = false) String nombre,
+                                    @RequestParam(required = false) String especie,
+                                    @RequestParam(required = false) String raza,
+                                    @RequestParam(required = false) String sexo,
+                                    Model model) {
+        MascotaFiltroDTO filtro = new MascotaFiltroDTO(nombre, especie, raza, sexo);
+        model.addAttribute("mascotas", mascotaService.listarConFiltros(filtro));
+        model.addAttribute("filtro", filtro);
         return "mascotas/listado-disponibles";
     }
 
