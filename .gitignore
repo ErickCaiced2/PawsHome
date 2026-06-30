@@ -29,3 +29,6 @@ oracleJdk-26/
 
 # Maven build output
 target/
+
+# Archivos de configuración local con credenciales reales
+pawshome/src/main/resources/application-dev.properties
