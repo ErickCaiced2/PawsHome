@@ -68,6 +68,217 @@
     font-weight: 700;
 }
 
+.contador-caracteres {
+    align-self: flex-end;
+    min-height: 1rem;
+    color: var(--texto-suave);
+    font-size: .78rem;
+    font-weight: 700;
+}
+
+.campo-numerico {
+    position: relative;
+}
+
+.campo-numerico input {
+    padding-right: 3.4rem;
+}
+
+.controles-numero {
+    position: absolute;
+    top: .35rem;
+    right: .45rem;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    gap: .15rem;
+    height: calc(100% - .7rem);
+}
+
+.controles-numero button {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    min-height: 0;
+    padding: 0;
+    color: var(--primario);
+    background: #fff;
+    border: 1px solid var(--borde);
+    border-radius: .35rem;
+    cursor: pointer;
+    font-size: .8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.controles-numero button:hover {
+    background: var(--suave);
+}
+
+.imagenes-preview {
+    width: 100%;
+}
+
+.carrusel-preview {
+    display: grid;
+    gap: .75rem;
+    margin-top: .35rem;
+}
+
+.carrusel-preview-marco {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    min-height: 220px;
+    max-height: 420px;
+    background: var(--suave);
+    border: 1.5px solid var(--borde);
+    border-radius: .75rem;
+}
+
+.carrusel-preview-imagen {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #fff;
+}
+
+.carrusel-preview-etiqueta,
+.carrusel-preview-indicador {
+    position: absolute;
+    z-index: 1;
+    padding: .35rem .65rem;
+    color: #fff;
+    background: rgba(44, 24, 16, .78);
+    border-radius: 999px;
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+.carrusel-preview-etiqueta {
+    top: .75rem;
+    left: .75rem;
+}
+
+.carrusel-preview-indicador {
+    right: .75rem;
+    bottom: .75rem;
+}
+
+.carrusel-preview-boton {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 2.35rem;
+    height: 2.35rem;
+    padding: 0;
+    color: var(--texto);
+    background: rgba(255, 255, 255, .9);
+    border: 1.5px solid var(--borde);
+    border-radius: 50%;
+    box-shadow: 0 8px 20px rgba(44, 24, 16, .12);
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 900;
+    line-height: 1;
+    transform: translateY(-50%);
+}
+
+.carrusel-preview-boton:hover {
+    color: #fff;
+    background: var(--primario);
+}
+
+.carrusel-preview-anterior {
+    left: .75rem;
+}
+
+.carrusel-preview-siguiente {
+    right: .75rem;
+}
+
+.carrusel-preview-quitar {
+    top: .75rem;
+    right: .75rem;
+    width: 2rem;
+    height: 2rem;
+    color: #fff;
+    background: rgba(212, 24, 61, .9);
+    border-color: rgba(255, 255, 255, .65);
+    box-shadow: 0 8px 20px rgba(44, 24, 16, .14);
+    font-size: .95rem;
+    transform: none;
+}
+
+.carrusel-preview-quitar:hover,
+.carrusel-preview-miniatura-quitar:hover {
+    color: #fff;
+    background: var(--error);
+}
+
+.carrusel-preview-miniaturas {
+    display: grid;
+    grid-auto-columns: minmax(4.5rem, 5.25rem);
+    grid-auto-flow: column;
+    gap: .5rem;
+    overflow-x: auto;
+    padding-bottom: .2rem;
+}
+
+.carrusel-preview-miniatura {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 1;
+    background: #fff;
+    border: 2px solid transparent;
+    border-radius: .55rem;
+}
+
+.carrusel-preview-miniatura.activo {
+    border-color: var(--primario);
+    box-shadow: 0 0 0 3px rgba(200, 90, 42, .12);
+}
+
+.carrusel-preview-ver {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+}
+
+.carrusel-preview-ver img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.carrusel-preview-miniatura-quitar {
+    position: absolute;
+    top: .25rem;
+    right: .25rem;
+    display: grid;
+    place-items: center;
+    width: 1.35rem;
+    height: 1.35rem;
+    padding: 0;
+    color: #fff;
+    background: rgba(44, 24, 16, .76);
+    border: 1px solid rgba(255, 255, 255, .7);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: .75rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
 .acciones-registro {
     display: flex;
     gap: .75rem;
@@ -106,5 +317,20 @@
 
     .acciones-registro {
         flex-direction: column-reverse;
+    }
+
+    .carrusel-preview-marco {
+        aspect-ratio: 4 / 3;
+        min-height: 180px;
+        max-height: 320px;
+    }
+
+    .carrusel-preview-boton {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .carrusel-preview-miniaturas {
+        grid-auto-columns: minmax(3.75rem, 4.5rem);
     }
 }

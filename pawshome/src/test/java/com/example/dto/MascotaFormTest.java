@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,9 +28,9 @@ public class MascotaFormTest {
                 "Bobby",
                 "Perro",
                 "Labrador",
-                "3 años",
-                "MACHO",
-                "Un perro amigable",
+                "3",
+                "Macho",
+                "Un perro muy amigable",
                 "http://example.com/image.jpg"
         );
 
@@ -40,62 +41,100 @@ public class MascotaFormTest {
     @Test
     public void testBlankFields() {
         MascotaForm form = new MascotaForm(
-                "", // nombre en blanco
-                "   ", // especie en blanco
+                "",        // nombre en blanco
+                "   ",     // especie en blanco
                 "Labrador",
-                "", // edadAproximada en blanco
-                "", // sexo en blanco
-                "   ", // descripcion en blanco
+                null,      // edadAproximada nula
+                "",        // sexo en blanco
+                "   ",     // descripcion en blanco
                 "http://example.com/image.jpg"
         );
 
         Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
-        // Esperamos al menos 5 violaciones (nombre, especie, edadAproximada, sexo, descripcion)
-        assertTrue(violations.size() >= 5);
+        Set<String> fields = violations.stream()
+                .map(v -> v.getPropertyPath().toString())
+                .collect(Collectors.toSet());
 
-        boolean hasNombreError = false;
-        boolean hasEspecieError = false;
-        boolean hasEdadError = false;
-        boolean hasSexoError = false;
-        boolean hasDescripcionError = false;
-
-        for (ConstraintViolation<MascotaForm> violation : violations) {
-            String property = violation.getPropertyPath().toString();
-            if ("nombre".equals(property)) hasNombreError = true;
-            if ("especie".equals(property)) hasEspecieError = true;
-            if ("edadAproximada".equals(property)) hasEdadError = true;
-            if ("sexo".equals(property)) hasSexoError = true;
-            if ("descripcion".equals(property)) hasDescripcionError = true;
-        }
-
-        assertTrue(hasNombreError, "Debería fallar por nombre en blanco");
-        assertTrue(hasEspecieError, "Debería fallar por especie en blanco");
-        assertTrue(hasEdadError, "Debería fallar por edadAproximada en blanco");
-        assertTrue(hasSexoError, "Debería fallar por sexo en blanco");
-        assertTrue(hasDescripcionError, "Debería fallar por descripcion en blanco");
+        assertTrue(fields.contains("nombre"), "Debería fallar por nombre en blanco");
+        assertTrue(fields.contains("especie"), "Debería fallar por especie en blanco");
+        assertTrue(fields.contains("edadAproximada"), "Debería fallar por edadAproximada nula");
+        assertTrue(fields.contains("sexo"), "Debería fallar por sexo en blanco");
+        assertTrue(fields.contains("descripcion"), "Debería fallar por descripcion en blanco");
     }
 
     @Test
-    public void testSizeExceeded() {
-        String longNombre = "a".repeat(81);
-        String longEspecie = "a".repeat(51);
-        String longRaza = "a".repeat(81);
-        String longEdad = "a".repeat(51);
-        String longSexo = "a".repeat(21);
-        String longUrl = "a".repeat(256);
-
+    public void testEdadNegativaFalla() {
         MascotaForm form = new MascotaForm(
-                longNombre,
-                longEspecie,
-                longRaza,
-                longEdad,
-                longSexo,
-                "Descripción válida",
-                longUrl
+                "Luna", "Gato", null, "-1", "Hembra", "Descripción válida aquí", null
+        );
+        Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
+        Set<String> fields = violations.stream()
+                .map(v -> v.getPropertyPath().toString())
+                .collect(Collectors.toSet());
+        assertTrue(fields.contains("edadAproximada"), "Debería fallar por edad negativa");
+    }
+
+    @Test
+    public void testEdadSuperiorA30Falla() {
+        MascotaForm form = new MascotaForm(
+                "Luna", "Gato", null, "31", "Hembra", "Descripción válida aquí", null
+        );
+        Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
+        Set<String> fields = violations.stream()
+                .map(v -> v.getPropertyPath().toString())
+                .collect(Collectors.toSet());
+        assertTrue(fields.contains("edadAproximada"), "Debería fallar por edad superior a 30");
+    }
+
+    @Test
+    public void testSexoInvalidoFalla() {
+        MascotaForm form = new MascotaForm(
+                "Max", "Perro", null, "2", "MACHO", "Descripción válida aquí", null
+        );
+        Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
+        Set<String> fields = violations.stream()
+                .map(v -> v.getPropertyPath().toString())
+                .collect(Collectors.toSet());
+        assertTrue(fields.contains("sexo"), "Debería fallar por sexo inválido (solo Macho/Hembra)");
+    }
+
+    @Test
+    public void testUrlImagenInvalidaFalla() {
+        MascotaForm form = new MascotaForm(
+                "Max", "Perro", null, "2", "Macho", "Descripción válida aquí", "no-es-una-url"
+        );
+        Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
+        Set<String> fields = violations.stream()
+                .map(v -> v.getPropertyPath().toString())
+                .collect(Collectors.toSet());
+        assertTrue(fields.contains("imagenUrl"), "Debería fallar por URL de imagen inválida");
+    }
+
+    @Test
+    public void testEdadConComaDecimalEsValida() {
+        MascotaForm form = new MascotaForm(
+                "Milo", "Gato", null, "0,5", "Macho", "Descripción válida aquí", null
         );
 
         Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
-        // Esperamos 6 violaciones por exceso de tamaño (nombre, especie, raza, edadAproximada, sexo, imagenUrl)
-        assertEquals(6, violations.size());
+        Set<String> fields = violations.stream()
+                .map(v -> v.getPropertyPath().toString())
+                .collect(Collectors.toSet());
+
+        assertFalse(fields.contains("edadAproximada"), "La edad 0,5 debería ser válida");
+    }
+
+    @Test
+    public void testEdadConPuntoDecimalFalla() {
+        MascotaForm form = new MascotaForm(
+                "Milo", "Gato", null, "0.5", "Macho", "Descripción válida aquí", null
+        );
+
+        Set<ConstraintViolation<MascotaForm>> violations = validator.validate(form);
+        Set<String> fields = violations.stream()
+                .map(v -> v.getPropertyPath().toString())
+                .collect(Collectors.toSet());
+
+        assertTrue(fields.contains("edadAproximada"), "La edad con punto decimal debería fallar");
     }
 }

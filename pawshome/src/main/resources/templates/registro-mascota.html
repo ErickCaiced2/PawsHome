@@ -22,10 +22,11 @@
           th:action="@{/mascotas}"
           th:object="${mascotaForm}"
           method="post"
+          enctype="multipart/form-data"
           novalidate>
         <h2>Datos de la mascota</h2>
 
-        <div class="resumen-errores" th:if="${#fields.hasAnyErrors()}">
+        <div class="resumen-errores" th:if="${#fields.hasAnyErrors() or imagenError != null}">
             Corrige los errores indicados antes de continuar.
         </div>
 
@@ -38,7 +39,8 @@
                        th:classappend="${#fields.hasErrors('nombre')} ? 'campo-invalido' : ''"
                        th:aria-invalid="${#fields.hasErrors('nombre')}"
                        th:aria-describedby="${#fields.hasErrors('nombre')} ? 'nombre-error' : null"
-                       maxlength="80"
+                       maxlength="50"
+                       oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\-]/g,'')"
                        required>
                 <span id="nombre-error"
                       class="error-campo"
@@ -54,7 +56,8 @@
                        th:classappend="${#fields.hasErrors('especie')} ? 'campo-invalido' : ''"
                        th:aria-invalid="${#fields.hasErrors('especie')}"
                        th:aria-describedby="${#fields.hasErrors('especie')} ? 'especie-error' : null"
-                       maxlength="50"
+                       maxlength="40"
+                       oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]/g,'')"
                        required>
                 <span id="especie-error"
                       class="error-campo"
@@ -70,7 +73,8 @@
                        th:classappend="${#fields.hasErrors('raza')} ? 'campo-invalido' : ''"
                        th:aria-invalid="${#fields.hasErrors('raza')}"
                        th:aria-describedby="${#fields.hasErrors('raza')} ? 'raza-error' : null"
-                       maxlength="80">
+                       maxlength="60"
+                       oninput="this.value=this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s\-]/g,'')">
                 <span id="raza-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('raza')}"
@@ -78,14 +82,17 @@
             </div>
 
             <div class="grupo-campo">
-                <label for="edadAproximada">Edad aproximada</label>
+                <label for="edadAproximada">Edad aproximada (en años)</label>
                 <input id="edadAproximada"
                        type="text"
                        th:field="*{edadAproximada}"
                        th:classappend="${#fields.hasErrors('edadAproximada')} ? 'campo-invalido' : ''"
                        th:aria-invalid="${#fields.hasErrors('edadAproximada')}"
                        th:aria-describedby="${#fields.hasErrors('edadAproximada')} ? 'edadAproximada-error' : null"
-                       maxlength="50"
+                       maxlength="4"
+                       inputmode="decimal"
+                       placeholder="Ej: 2 o 0,5"
+                       oninput="this.value=this.value.replace(/[^0-9,]/g,'')"
                        required>
                 <span id="edadAproximada-error"
                       class="error-campo"
@@ -95,33 +102,20 @@
 
             <div class="grupo-campo">
                 <label for="sexo">Sexo</label>
-                <input id="sexo"
-                       type="text"
-                       th:field="*{sexo}"
-                       th:classappend="${#fields.hasErrors('sexo')} ? 'campo-invalido' : ''"
-                       th:aria-invalid="${#fields.hasErrors('sexo')}"
-                       th:aria-describedby="${#fields.hasErrors('sexo')} ? 'sexo-error' : null"
-                       maxlength="20"
-                       required>
+                <select id="sexo"
+                        th:field="*{sexo}"
+                        th:classappend="${#fields.hasErrors('sexo')} ? 'campo-invalido' : ''"
+                        th:aria-invalid="${#fields.hasErrors('sexo')}"
+                        th:aria-describedby="${#fields.hasErrors('sexo')} ? 'sexo-error' : null"
+                        required>
+                    <option value="">-- Selecciona --</option>
+                    <option value="Macho">Macho</option>
+                    <option value="Hembra">Hembra</option>
+                </select>
                 <span id="sexo-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('sexo')}"
                       th:errors="*{sexo}"></span>
-            </div>
-
-            <div class="grupo-campo">
-                <label for="imagenUrl">URL de imagen <span>(opcional)</span></label>
-                <input id="imagenUrl"
-                       type="url"
-                       th:field="*{imagenUrl}"
-                       th:classappend="${#fields.hasErrors('imagenUrl')} ? 'campo-invalido' : ''"
-                       th:aria-invalid="${#fields.hasErrors('imagenUrl')}"
-                       th:aria-describedby="${#fields.hasErrors('imagenUrl')} ? 'imagenUrl-error' : null"
-                       maxlength="255">
-                <span id="imagenUrl-error"
-                      class="error-campo"
-                      th:if="${#fields.hasErrors('imagenUrl')}"
-                      th:errors="*{imagenUrl}"></span>
             </div>
 
             <div class="grupo-campo grupo-campo-ancho">
@@ -130,12 +124,40 @@
                           th:field="*{descripcion}"
                           th:classappend="${#fields.hasErrors('descripcion')} ? 'campo-invalido' : ''"
                           th:aria-invalid="${#fields.hasErrors('descripcion')}"
-                          th:aria-describedby="${#fields.hasErrors('descripcion')} ? 'descripcion-error' : null"
+                          th:aria-describedby="${#fields.hasErrors('descripcion')} ? 'descripcion-error descripcion-contador' : 'descripcion-contador'"
+                          maxlength="255"
+                          data-contador-caracteres="descripcion-contador"
+                          placeholder="Describe el temperamento, historia y necesidades especiales de la mascota"
                           required></textarea>
+                <span id="descripcion-contador" class="contador-caracteres"></span>
                 <span id="descripcion-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('descripcion')}"
                       th:errors="*{descripcion}"></span>
+            </div>
+
+            <!-- Carga de imágenes -->
+            <div class="grupo-campo grupo-campo-ancho">
+                <label for="imagenes">
+                    Fotos de la mascota <span>(mínimo 3 · JPG, PNG o WEBP · máx. 5 MB c/u)</span>
+                </label>
+
+                <div id="zona-carga"
+                     class="zona-carga"
+                     th:classappend="${imagenError != null} ? 'campo-invalido' : ''">
+                    <input id="imagenes"
+                           type="file"
+                           name="imagenes"
+                           accept="image/jpeg,image/png,image/webp"
+                           multiple
+                           required>
+                    <p class="zona-carga-texto">Arrastra tus fotos aquí o haz clic para seleccionarlas</p>
+                </div>
+
+                <span id="imagenes-contador" class="ayuda-campo"></span>
+                <span class="error-campo" th:if="${imagenError != null}" th:text="${imagenError}"></span>
+
+                <div id="imagenes-preview" class="imagenes-preview"></div>
             </div>
         </div>
 
@@ -147,5 +169,222 @@
 
     <a th:href="@{/}" class="volver-inicio">← Regresar al inicio</a>
 </main>
+
+<script th:src="@{/js/interacciones.js}"></script>
+<script>
+    (function () {
+        const input = document.getElementById('imagenes');
+        const contador = document.getElementById('imagenes-contador');
+        const preview = document.getElementById('imagenes-preview');
+        const TIPOS_VALIDOS = ['image/jpeg', 'image/png', 'image/webp'];
+        const MAX_BYTES = 5 * 1024 * 1024;
+        let urlsPreview = [];
+        let archivosSeleccionados = [];
+
+        function limpiarPreview() {
+            urlsPreview.forEach(function (item) {
+                URL.revokeObjectURL(item.url);
+            });
+            urlsPreview = [];
+            preview.innerHTML = '';
+        }
+
+        function obtenerClaveArchivo(archivo) {
+            return archivo.name + '-' + archivo.size + '-' + archivo.lastModified;
+        }
+
+        function sincronizarInput() {
+            const transferencia = new DataTransfer();
+            archivosSeleccionados.forEach(function (archivo) {
+                transferencia.items.add(archivo);
+            });
+            input.files = transferencia.files;
+        }
+
+        function actualizarContador(errores) {
+            const validas = archivosSeleccionados.length;
+            contador.textContent = validas + ' imagen(es) seleccionada(s)' +
+                (errores.length > 0 ? ' Â· ' + errores.join(', ') : '');
+            contador.style.color = validas >= 3 ? '#2e7d32' : '#c62828';
+        }
+
+        function quitarArchivo(indice) {
+            archivosSeleccionados.splice(indice, 1);
+            sincronizarInput();
+            limpiarPreview();
+            renderizarCarrusel(archivosSeleccionados);
+            actualizarContador([]);
+        }
+
+        function crearBotonCarrusel(texto, etiqueta) {
+            const boton = document.createElement('button');
+            boton.type = 'button';
+            boton.className = 'carrusel-preview-boton';
+            boton.textContent = texto;
+            boton.setAttribute('aria-label', etiqueta);
+            return boton;
+        }
+
+        function renderizarCarrusel(archivos) {
+            if (archivos.length === 0) {
+                return;
+            }
+
+            urlsPreview = archivos.map(function (archivo, i) {
+                return {
+                    url: URL.createObjectURL(archivo),
+                    nombre: archivo.name,
+                    etiqueta: i === 0 ? 'Portada' : 'Foto ' + (i + 1)
+                };
+            });
+
+            let indiceActual = 0;
+            const carrusel = document.createElement('div');
+            carrusel.className = 'carrusel-preview';
+
+            const marco = document.createElement('div');
+            marco.className = 'carrusel-preview-marco';
+
+            const imagen = document.createElement('img');
+            imagen.className = 'carrusel-preview-imagen';
+
+            const etiqueta = document.createElement('span');
+            etiqueta.className = 'carrusel-preview-etiqueta';
+
+            const indicador = document.createElement('span');
+            indicador.className = 'carrusel-preview-indicador';
+
+            const anterior = crearBotonCarrusel('<', 'Ver imagen anterior');
+            const siguiente = crearBotonCarrusel('>', 'Ver imagen siguiente');
+            const quitarActual = crearBotonCarrusel('x', 'Quitar imagen actual');
+            anterior.classList.add('carrusel-preview-anterior');
+            siguiente.classList.add('carrusel-preview-siguiente');
+            quitarActual.classList.add('carrusel-preview-quitar');
+
+            const miniaturas = document.createElement('div');
+            miniaturas.className = 'carrusel-preview-miniaturas';
+
+            function actualizarCarrusel(nuevoIndice) {
+                indiceActual = (nuevoIndice + urlsPreview.length) % urlsPreview.length;
+                const actual = urlsPreview[indiceActual];
+                imagen.src = actual.url;
+                imagen.alt = actual.nombre;
+                etiqueta.textContent = actual.etiqueta;
+                indicador.textContent = (indiceActual + 1) + ' / ' + urlsPreview.length;
+
+                miniaturas.querySelectorAll('.carrusel-preview-miniatura').forEach(function (boton, i) {
+                    const activo = i === indiceActual;
+                    boton.classList.toggle('activo', activo);
+                    boton.setAttribute('aria-current', activo ? 'true' : 'false');
+                });
+            }
+
+            urlsPreview.forEach(function (item, i) {
+                const miniatura = document.createElement('div');
+                miniatura.className = 'carrusel-preview-miniatura';
+
+                const verMiniatura = document.createElement('button');
+                verMiniatura.type = 'button';
+                verMiniatura.className = 'carrusel-preview-ver';
+                verMiniatura.setAttribute('aria-label', 'Ver ' + item.etiqueta.toLowerCase());
+
+                const img = document.createElement('img');
+                img.src = item.url;
+                img.alt = '';
+
+                const quitarMiniatura = document.createElement('button');
+                quitarMiniatura.type = 'button';
+                quitarMiniatura.className = 'carrusel-preview-miniatura-quitar';
+                quitarMiniatura.textContent = 'x';
+                quitarMiniatura.setAttribute('aria-label', 'Quitar ' + item.etiqueta.toLowerCase());
+
+                verMiniatura.appendChild(img);
+                verMiniatura.addEventListener('click', function () {
+                    actualizarCarrusel(i);
+                });
+
+                quitarMiniatura.addEventListener('click', function () {
+                    quitarArchivo(i);
+                });
+
+                miniatura.appendChild(verMiniatura);
+                miniatura.appendChild(quitarMiniatura);
+                miniaturas.appendChild(miniatura);
+            });
+
+            anterior.addEventListener('click', function () {
+                actualizarCarrusel(indiceActual - 1);
+            });
+
+            siguiente.addEventListener('click', function () {
+                actualizarCarrusel(indiceActual + 1);
+            });
+
+            marco.appendChild(imagen);
+            marco.appendChild(etiqueta);
+            marco.appendChild(indicador);
+            marco.appendChild(quitarActual);
+
+            if (urlsPreview.length > 1) {
+                marco.appendChild(anterior);
+                marco.appendChild(siguiente);
+            }
+
+            carrusel.appendChild(marco);
+            carrusel.appendChild(miniaturas);
+            preview.appendChild(carrusel);
+            actualizarCarrusel(0);
+
+            quitarActual.addEventListener('click', function () {
+                quitarArchivo(indiceActual);
+            });
+        }
+
+        input.addEventListener('change', function () {
+            limpiarPreview();
+            const archivos = Array.from(this.files);
+            let errores = [];
+            const clavesActuales = new Set(archivosSeleccionados.map(obtenerClaveArchivo));
+
+            archivos.forEach(function (archivo) {
+                if (!TIPOS_VALIDOS.includes(archivo.type)) {
+                    errores.push(archivo.name + ': formato no permitido');
+                    return;
+                }
+                if (archivo.size > MAX_BYTES) {
+                    errores.push(archivo.name + ': supera 5 MB');
+                    return;
+                }
+                const clave = obtenerClaveArchivo(archivo);
+                if (clavesActuales.has(clave)) {
+                    errores.push(archivo.name + ': ya seleccionada');
+                    return;
+                }
+
+                archivosSeleccionados.push(archivo);
+                clavesActuales.add(clave);
+            });
+
+            sincronizarInput();
+            renderizarCarrusel(archivosSeleccionados);
+
+            const validas = archivosSeleccionados.length;
+
+            contador.textContent = validas + ' imagen(es) seleccionada(s)' +
+                (errores.length > 0 ? ' · ' + errores.join(', ') : '');
+            contador.style.color = validas >= 3 ? '#2e7d32' : '#c62828';
+        });
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            sincronizarInput();
+            if (archivosSeleccionados.length < 3) {
+                e.preventDefault();
+                contador.textContent = 'Debes seleccionar al menos 3 imágenes válidas antes de enviar';
+                contador.style.color = '#c62828';
+                input.focus();
+            }
+        });
+    })();
+</script>
 </body>
 </html>

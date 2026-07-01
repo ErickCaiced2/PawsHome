@@ -173,7 +173,12 @@ a:focus-visible {
 }
 
 .campo-con-boton input {
-    padding-right: 3rem;
+    padding-right: 3.5rem;
+}
+
+.campo-con-boton input::-ms-reveal,
+.campo-con-boton input::-ms-clear {
+    display: none;
 }
 
 .mostrar-contrasena {
@@ -183,11 +188,40 @@ a:focus-visible {
     width: 2rem;
     height: 2rem;
     padding: 0;
-    color: var(--texto-suave);
+    color: var(--texto);
     background: transparent;
     border: 0;
     transform: translateY(-50%);
     cursor: pointer;
+}
+
+.mostrar-contrasena .icono-ojo {
+    width: 1.25rem;
+    height: 1.25rem;
+    display: block;
+    margin: auto;
+}
+
+.mostrar-contrasena .ojo-contorno,
+.mostrar-contrasena .ojo-pupila,
+.mostrar-contrasena .ojo-cerrado {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.mostrar-contrasena .ojo-cerrado {
+    display: none;
+}
+
+.mostrar-contrasena.contrasena-visible {
+    color: var(--primario);
+}
+
+.mostrar-contrasena.contrasena-visible .ojo-cerrado {
+    display: block;
 }
 
 .grupo-campo input:focus,
