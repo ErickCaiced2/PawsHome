@@ -124,10 +124,12 @@
                           th:field="*{descripcion}"
                           th:classappend="${#fields.hasErrors('descripcion')} ? 'campo-invalido' : ''"
                           th:aria-invalid="${#fields.hasErrors('descripcion')}"
-                          th:aria-describedby="${#fields.hasErrors('descripcion')} ? 'descripcion-error' : null"
-                          maxlength="1000"
+                          th:aria-describedby="${#fields.hasErrors('descripcion')} ? 'descripcion-error descripcion-contador' : 'descripcion-contador'"
+                          maxlength="255"
+                          data-contador-caracteres="descripcion-contador"
                           placeholder="Describe el temperamento, historia y necesidades especiales de la mascota"
                           required></textarea>
+                <span id="descripcion-contador" class="contador-caracteres"></span>
                 <span id="descripcion-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('descripcion')}"
@@ -168,6 +170,7 @@
     <a th:href="@{/}" class="volver-inicio">← Regresar al inicio</a>
 </main>
 
+<script th:src="@{/js/interacciones.js}"></script>
 <script>
     (function () {
         const input = document.getElementById('imagenes');
