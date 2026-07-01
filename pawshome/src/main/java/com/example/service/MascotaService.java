@@ -53,6 +53,11 @@ public class MascotaService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<Mascota> buscarPorId(Long id) {
+        return mascotaRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
     public List<Mascota> listarConFiltros(MascotaFiltroDTO filtro) {
         Specification<Mascota> spec = MascotaEspecificacion.soloDisponibles()
                 .and(MascotaEspecificacion.conEspecie(filtro.getEspecie()))

@@ -83,19 +83,17 @@
         <div th:if="${!#lists.isEmpty(mascotas)}" class="cuadricula-mascotas">
             <article class="tarjeta-mascota" th:each="mascota : ${mascotas}">
 
-                <div class="foto-mascota">
-                    <!-- Imagen real -->
+                <a th:href="@{/catalogo/{id}(id=${mascota.id})}" class="foto-mascota" style="display:block; text-decoration:none;">
                     <img th:if="${mascota.imagenUrl != null and !mascota.imagenUrl.isBlank()}"
                          th:src="${mascota.imagenUrl}"
                          th:alt="${mascota.nombre}"
                          style="width:100%; height:100%; object-fit:cover;">
-                    <!-- Placeholder cuando no hay imagen -->
                     <div th:if="${mascota.imagenUrl == null or mascota.imagenUrl.isBlank()}"
                          style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--suave); font-size:3.5rem;">
                         <span th:text="${mascota.especie == 'Gato'} ? '🐱' : '🐶'" aria-hidden="true"></span>
                     </div>
                     <span class="estado">Disponible</span>
-                </div>
+                </a>
 
                 <div class="contenido-tarjeta">
                     <div class="nombre-especie">
@@ -107,6 +105,9 @@
                     </p>
                     <p th:text="${mascota.descripcion}"
                        style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-top:.25rem;"></p>
+                    <a th:href="@{/catalogo/{id}(id=${mascota.id})}"
+                       class="boton boton-primario"
+                       style="display:inline-block; margin-top:.75rem; font-size:.85rem;">Ver perfil</a>
                 </div>
 
             </article>
