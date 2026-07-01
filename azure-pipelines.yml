@@ -13,7 +13,7 @@ variables:
 stages:
 
 # ==========================================
-# ETAPA 1: INTEGRACIÓN CONTINUA (CI)
+# ETAPA ÚNICA: INTEGRACIÓN CONTINUA (CI)
 # ==========================================
 - stage: Build
   displayName: 'Etapa de Compilación (CI)'
@@ -33,44 +33,18 @@ stages:
         mavenVersionOption: 'Path'
         mavenDirectory: 'C:\Program Files\apache-maven-3.9.16'
 
-    - task: PublishBuildArtifacts@1
-      displayName: 'Guardar Artefacto Compilado'
+    # PASO 1: Copiar solo el .jar a la carpeta temporal de artefactos
+    - task: CopyFiles@2
+      displayName: 'Filtrar y copiar archivo .jar'
       inputs:
-        PathtoPublish: '$(System.DefaultWorkingDirectory)/pawshome/target'
+        SourceFolder: '$(System.DefaultWorkingDirectory)/pawshome/target'
+        Contents: '*.jar'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    # PASO 2: Publicar el contenido de la carpeta temporal (donde ahora solo vive el .jar)
+    - task: PublishBuildArtifacts@1
+      displayName: 'Guardar Artefacto Compilado (.jar)'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
         ArtifactName: 'pawshome-package'
         publishLocation: 'Container'
-
-# ==========================================
-# ETAPA 2: DESPLIEGUE CONTINUO (CD) - CORREGIDA
-# ==========================================
-- stage: Deploy
-  displayName: 'Etapa de Despliegue (CD)'
-  dependsOn: Build
-  condition: succeeded()
-  jobs:
-  - deployment: DeployAzureJob
-    displayName: 'Desplegar a Azure App Service'
-    # AQUÍ es donde debe ir para que active el botón de aprobación manual
-    environment: 'Produccion' 
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: DownloadBuildArtifacts@0
-            displayName: 'Descargar Artefacto'
-            inputs:
-              buildType: 'current'
-              downloadType: 'single'
-              artifactName: 'pawshome-package'
-              downloadPath: '$(System.ArtifactsDirectory)'
-
-          - task: AzureWebApp@1
-            displayName: 'Desplegar en Azure Web App'
-            inputs:
-              azureSubscription: '$(azureServiceConnection)'
-              appType: 'webAppLinux'
-              appName: '$(webAppName)'
-              package: '$(System.ArtifactsDirectory)/pawshome-package/pawshome-*.jar'
-              
-              # ESTA LÍNEA ES EL SECRETO para que no se quede colgado en bucle:
-              deploymentMethod: 'zipDeploy'

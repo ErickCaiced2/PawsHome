@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${mascota.nombre} + ' | PawsHome'">Perfil de mascota | PawsHome</title>
+    <link rel="stylesheet" th:href="@{/css/estilosGenerales.css}">
+    <link rel="stylesheet" th:href="@{/css/inicio.css}">
+</head>
+<body class="pagina-inicio">
+
+<nav class="barra-navegacion">
+    <div class="contenedor navegacion-interior">
+        <a class="marca" th:href="@{/}" aria-label="PawsHome">
+            <span class="marca-icono" aria-hidden="true">🐾</span>
+            <span>PawsHome</span>
+        </a>
+        <button class="boton-menu" type="button" aria-label="Abrir menu" aria-expanded="false" data-menu-toggle>☰</button>
+        <div class="menu-navegacion" id="enlacesNavegacion">
+            <div class="enlaces-centro">
+                <a th:href="@{/}">Inicio</a>
+                <a class="activo" th:href="@{/catalogo}">Mascotas</a>
+                <a sec:authorize="hasRole('ADMINISTRADOR_REFUGIO')" th:href="@{/mascotas/gestion}">Mi gestion</a>
+            </div>
+            <div class="acciones-usuario">
+                <a sec:authorize="isAnonymous()" th:href="@{/login}">Iniciar sesion</a>
+                <form sec:authorize="isAuthenticated()" class="logout-form" th:action="@{/logout}" method="post">
+                    <button class="boton boton-secundario boton-pequeno" type="submit">Cerrar sesion</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<main>
+    <section class="contenedor seccion" style="padding-top: 2rem; padding-bottom: 4rem; max-width: 900px;">
+
+        <a th:href="@{/catalogo}" class="boton boton-secundario" style="display:inline-flex; align-items:center; gap:.4rem; margin-bottom:1.5rem;">
+            ← Volver al catálogo
+        </a>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem; align-items:start;">
+
+            <!-- Galería de imágenes -->
+            <div>
+                <!-- Imagen principal -->
+                <div id="imagen-principal" style="border-radius:12px; overflow:hidden; aspect-ratio:4/3; background:var(--suave); margin-bottom:.75rem;">
+                    <img th:if="${!#lists.isEmpty(imagenes)}"
+                         th:id="'img-principal'"
+                         th:src="${imagenes[0]}"
+                         th:alt="${mascota.nombre}"
+                         style="width:100%; height:100%; object-fit:cover; display:block;">
+                    <div th:if="${#lists.isEmpty(imagenes)}"
+                         style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:5rem;">
+                        <span th:text="${mascota.especie == 'Gato'} ? '🐱' : '🐶'" aria-hidden="true"></span>
+                    </div>
+                </div>
+
+                <!-- Miniaturas -->
+                <div th:if="${imagenes.size() > 1}"
+                     style="display:flex; gap:.5rem; flex-wrap:wrap;">
+                    <img th:each="url, iter : ${imagenes}"
+                         th:src="${url}"
+                         th:alt="${mascota.nombre} + ' foto ' + ${iter.index + 1}"
+                         th:data-src="${url}"
+                         onclick="document.getElementById('img-principal').src = this.dataset.src"
+                         style="width:70px; height:70px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid transparent; transition:border-color .2s;"
+                         onmouseover="this.style.borderColor='var(--primario)'"
+                         onmouseout="this.style.borderColor='transparent'">
+                </div>
+            </div>
+
+            <!-- Información del perfil -->
+            <div>
+                <div style="display:flex; align-items:center; gap:.75rem; margin-bottom:.5rem;">
+                    <h1 style="font-family:'Lora',serif; font-size:2rem; margin:0;" th:text="${mascota.nombre}">Nombre</h1>
+                    <span class="estado" style="position:static; font-size:.8rem;"
+                          th:text="${mascota.estadoDisponibilidad.name() == 'DISPONIBLE'} ? 'Disponible' :
+                                    (mascota.estadoDisponibilidad.name() == 'EN_PROCESO' ? 'En proceso' : 'Adoptado')">
+                        Estado
+                    </span>
+                </div>
+
+                <p style="color:var(--texto-suave); font-size:1rem; margin-bottom:1.5rem;" th:text="${mascota.especie}">Especie</p>
+
+                <table style="width:100%; border-collapse:collapse; margin-bottom:1.5rem;">
+                    <tr style="border-bottom:1px solid var(--borde);">
+                        <th style="text-align:left; padding:.6rem 0; color:var(--texto-suave); font-weight:500; width:40%;">Raza</th>
+                        <td style="padding:.6rem 0;" th:text="${mascota.raza != null and !mascota.raza.isBlank()} ? ${mascota.raza} : 'No especificada'">—</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--borde);">
+                        <th style="text-align:left; padding:.6rem 0; color:var(--texto-suave); font-weight:500;">Edad</th>
+                        <td style="padding:.6rem 0;" th:text="${mascota.edadAproximada}">—</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--borde);">
+                        <th style="text-align:left; padding:.6rem 0; color:var(--texto-suave); font-weight:500;">Sexo</th>
+                        <td style="padding:.6rem 0;" th:text="${mascota.sexo}">—</td>
+                    </tr>
+                    <tr>
+                        <th style="text-align:left; padding:.6rem 0; color:var(--texto-suave); font-weight:500;">Publicado</th>
+                        <td style="padding:.6rem 0;" th:text="${#temporals.format(mascota.fechaPublicacion, 'dd/MM/yyyy')}">—</td>
+                    </tr>
+                </table>
+
+                <h2 style="font-size:1rem; font-weight:600; margin-bottom:.5rem;">Descripción</h2>
+                <p style="color:var(--texto-suave); line-height:1.7;" th:text="${mascota.descripcion}">Descripción de la mascota.</p>
+            </div>
+
+        </div>
+
+    </section>
+</main>
+
+<footer><p>© 2026 PawsHome - Hecho con amor para las mascotas</p></footer>
+<script th:src="@{/js/interacciones.js}"></script>
+</body>
+</html>
