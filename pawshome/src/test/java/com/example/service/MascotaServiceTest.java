@@ -1,6 +1,8 @@
 package com.example.service;
 
+import com.example.dto.MascotaFiltroDTO;
 import com.example.dto.MascotaForm;
+import org.springframework.data.jpa.domain.Specification;
 import com.example.exception.AccesoDenegadoException;
 import com.example.exception.MascotaNoEncontradaException;
 import com.example.model.EstadoMascota;
@@ -27,6 +29,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import org.mockito.ArgumentMatchers;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -70,7 +73,8 @@ class MascotaServiceTest {
                 new MockMultipartFile("imagenes", "img3.jpg", "image/jpeg", "data3".getBytes())
         );
 
-        when(blobStorageService.subir(any())).thenReturn("https://pawssources.blob.core.windows.net/mascotas/test.jpg");
+        lenient().when(blobStorageService.subir(any()))
+                .thenReturn("https://pawssources.blob.core.windows.net/mascotas/test.jpg");
     }
 
     // ── cambiarDisponibilidad ─────────────────────────────────────────────────
@@ -221,6 +225,38 @@ class MascotaServiceTest {
 
         verify(mascotaRepository, times(1)).findByAdministradorId(adminId);
         verify(mascotaRepository, never()).findAll();
+    }
+
+    // ── listarConFiltros ──────────────────────────────────────────────────────
+
+    @Test
+    void listarConFiltros_delegaAlRepositorioConSpecification() {
+        when(mascotaRepository.findAll(ArgumentMatchers.<Specification<Mascota>>any())).thenReturn(List.of());
+
+        mascotaService.listarConFiltros(new MascotaFiltroDTO(null, "Perro", null, "Macho"));
+
+        verify(mascotaRepository).findAll(ArgumentMatchers.<Specification<Mascota>>any());
+    }
+
+    @Test
+    void listarConFiltros_sinFiltros_retornaTodasLasDisponibles() {
+        Mascota m1 = new Mascota(); m1.setEstadoDisponibilidad(EstadoMascota.DISPONIBLE);
+        Mascota m2 = new Mascota(); m2.setEstadoDisponibilidad(EstadoMascota.DISPONIBLE);
+        when(mascotaRepository.findAll(ArgumentMatchers.<Specification<Mascota>>any())).thenReturn(List.of(m1, m2));
+
+        List<Mascota> resultado = mascotaService.listarConFiltros(new MascotaFiltroDTO());
+
+        assertThat(resultado).hasSize(2);
+    }
+
+    @Test
+    void listarConFiltros_filtrosVacios_llamaAlRepositorioUnaVez() {
+        when(mascotaRepository.findAll(ArgumentMatchers.<Specification<Mascota>>any())).thenReturn(List.of());
+
+        mascotaService.listarConFiltros(new MascotaFiltroDTO());
+
+        verify(mascotaRepository, times(1)).findAll(ArgumentMatchers.<Specification<Mascota>>any());
+        verify(mascotaRepository, never()).findByEstadoDisponibilidad(any());
     }
 
     // ── estados del enum ──────────────────────────────────────────────────────

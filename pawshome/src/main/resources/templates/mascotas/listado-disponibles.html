@@ -19,7 +19,7 @@
         <div class="menu-navegacion" id="enlacesNavegacion">
             <div class="enlaces-centro">
                 <a th:href="@{/}">Inicio</a>
-                <a class="activo" th:href="@{/mascotas/disponibles}">Mascotas</a>
+                <a class="activo" th:href="@{/catalogo}">Mascotas</a>
                 <a sec:authorize="hasRole('ADMINISTRADOR_REFUGIO')" th:href="@{/mascotas/gestion}">Mi gestion</a>
             </div>
             <div class="acciones-usuario">
@@ -42,6 +42,35 @@
             </div>
         </div>
 
+        <!-- Formulario de búsqueda -->
+        <form class="formulario-busqueda" th:action="@{/catalogo}" method="get">
+            <input type="text"
+                   name="nombre"
+                   placeholder="Buscar por nombre..."
+                   th:value="${filtro?.nombre}"
+                   maxlength="50">
+            <select name="especie">
+                <option value="">Todas las especies</option>
+                <option value="Perro"  th:selected="${filtro?.especie == 'Perro'}">Perro</option>
+                <option value="Gato"   th:selected="${filtro?.especie == 'Gato'}">Gato</option>
+                <option value="Conejo" th:selected="${filtro?.especie == 'Conejo'}">Conejo</option>
+                <option value="Ave"    th:selected="${filtro?.especie == 'Ave'}">Ave</option>
+                <option value="Otro"   th:selected="${filtro?.especie == 'Otro'}">Otro</option>
+            </select>
+            <select name="sexo">
+                <option value="">Cualquier sexo</option>
+                <option value="Macho"  th:selected="${filtro?.sexo == 'Macho'}">Macho</option>
+                <option value="Hembra" th:selected="${filtro?.sexo == 'Hembra'}">Hembra</option>
+            </select>
+            <input type="text"
+                   name="raza"
+                   placeholder="Raza (opcional)..."
+                   th:value="${filtro?.raza}"
+                   maxlength="60">
+            <button class="boton boton-primario" type="submit">Buscar</button>
+            <a class="boton boton-secundario" th:href="@{/catalogo}">Limpiar</a>
+        </form>
+
         <!-- Estado vacío -->
         <div th:if="${#lists.isEmpty(mascotas)}" style="text-align:center; padding: 4rem 1rem;">
             <p style="font-size: 3rem; margin-bottom: 1rem;">🐾</p>
@@ -54,19 +83,19 @@
         <div th:if="${!#lists.isEmpty(mascotas)}" class="cuadricula-mascotas">
             <article class="tarjeta-mascota" th:each="mascota : ${mascotas}">
 
-                <div class="foto-mascota">
-                    <!-- Imagen real -->
+                <button type="button"
+                        class="foto-mascota foto-mascota-boton"
+                        th:data-modal-open="'detalle-mascota-' + ${mascota.id}">
                     <img th:if="${mascota.imagenUrl != null and !mascota.imagenUrl.isBlank()}"
                          th:src="${mascota.imagenUrl}"
                          th:alt="${mascota.nombre}"
                          style="width:100%; height:100%; object-fit:cover;">
-                    <!-- Placeholder cuando no hay imagen -->
                     <div th:if="${mascota.imagenUrl == null or mascota.imagenUrl.isBlank()}"
                          style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:var(--suave); font-size:3.5rem;">
                         <span th:text="${mascota.especie == 'Gato'} ? '🐱' : '🐶'" aria-hidden="true"></span>
                     </div>
                     <span class="estado">Disponible</span>
-                </div>
+                </button>
 
                 <div class="contenido-tarjeta">
                     <div class="nombre-especie">
@@ -78,7 +107,98 @@
                     </p>
                     <p th:text="${mascota.descripcion}"
                        style="display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; margin-top:.25rem;"></p>
+                    <button type="button"
+                            class="boton boton-primario"
+                            th:data-modal-open="'detalle-mascota-' + ${mascota.id}"
+                            style="display:inline-block; margin-top:.75rem; font-size:.85rem;">Ver perfil</button>
                 </div>
+
+                <dialog class="modal-detalle-mascota" th:id="'detalle-mascota-' + ${mascota.id}">
+                    <div class="modal-detalle-contenido">
+                        <button type="button"
+                                class="modal-detalle-cerrar"
+                                th:data-modal-close="'detalle-mascota-' + ${mascota.id}"
+                                aria-label="Cerrar detalle">x</button>
+
+                        <div class="modal-detalle-galeria"
+                             th:data-modal-carousel="'detalle-mascota-' + ${mascota.id}">
+                            <div class="modal-detalle-imagenes"
+                                 th:if="${!#lists.isEmpty(mascota.imagenes)}">
+                                <figure class="modal-detalle-slide"
+                                        th:each="imagen, iter : ${mascota.imagenes}"
+                                        th:classappend="${iter.index == 0} ? ' activo' : ''">
+                                    <img th:src="${imagen.imagenUrl}"
+                                         th:alt="${mascota.nombre} + ' foto ' + ${iter.index + 1}">
+                                </figure>
+                            </div>
+
+                            <div class="modal-detalle-imagenes"
+                                 th:if="${#lists.isEmpty(mascota.imagenes)}">
+                                <figure class="modal-detalle-slide activo">
+                                    <img th:if="${mascota.imagenUrl != null and !mascota.imagenUrl.isBlank()}"
+                                         th:src="${mascota.imagenUrl}"
+                                         th:alt="${mascota.nombre}">
+                                    <div th:if="${mascota.imagenUrl == null or mascota.imagenUrl.isBlank()}"
+                                         class="modal-detalle-fallback">
+                                        <span th:text="${mascota.especie == 'Gato'} ? 'ðŸ±' : 'ðŸ¶'" aria-hidden="true"></span>
+                                    </div>
+                                </figure>
+                            </div>
+
+                            <div class="modal-detalle-controles"
+                                 th:if="${!#lists.isEmpty(mascota.imagenes) and mascota.imagenes.size() > 1}">
+                                <button type="button" data-modal-slide="prev" aria-label="Imagen anterior">&lt;</button>
+                                <span data-modal-indicator>1 / 1</span>
+                                <button type="button" data-modal-slide="next" aria-label="Imagen siguiente">&gt;</button>
+                            </div>
+
+                            <div class="modal-detalle-miniaturas"
+                                 th:if="${!#lists.isEmpty(mascota.imagenes) and mascota.imagenes.size() > 1}">
+                                <button type="button"
+                                        th:each="imagen, iter : ${mascota.imagenes}"
+                                        th:data-modal-thumb="${iter.index}"
+                                        th:classappend="${iter.index == 0} ? 'activo' : ''"
+                                        th:aria-label="'Ver foto ' + ${iter.index + 1}">
+                                    <img th:src="${imagen.imagenUrl}" alt="">
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="modal-detalle-info">
+                            <div class="modal-detalle-titulo">
+                                <div>
+                                    <h3 th:text="${mascota.nombre}">Nombre</h3>
+                                    <p th:text="${mascota.especie}">Especie</p>
+                                </div>
+                                <span>Disponible</span>
+                            </div>
+
+                            <dl class="modal-detalle-datos">
+                                <div>
+                                    <dt>Raza</dt>
+                                    <dd th:text="${mascota.raza != null and !mascota.raza.isBlank()} ? ${mascota.raza} : 'No especificada'">Raza</dd>
+                                </div>
+                                <div>
+                                    <dt>Edad</dt>
+                                    <dd th:text="${mascota.edadAproximada}">Edad</dd>
+                                </div>
+                                <div>
+                                    <dt>Sexo</dt>
+                                    <dd th:text="${mascota.sexo}">Sexo</dd>
+                                </div>
+                                <div>
+                                    <dt>Publicado</dt>
+                                    <dd th:text="${#temporals.format(mascota.fechaPublicacion, 'dd/MM/yyyy')}">Fecha</dd>
+                                </div>
+                            </dl>
+
+                            <div class="modal-detalle-descripcion">
+                                <h4>Descripcion</h4>
+                                <p th:text="${mascota.descripcion}">Descripcion completa de la mascota.</p>
+                            </div>
+                        </div>
+                    </div>
+                </dialog>
 
             </article>
         </div>

@@ -8,8 +8,11 @@ import com.example.model.Mascota;
 import com.example.model.MascotaImagen;
 import com.example.model.RolUsuario;
 import com.example.model.Usuario;
+import com.example.dto.MascotaFiltroDTO;
 import com.example.repository.MascotaImagenRepository;
 import com.example.repository.MascotaRepository;
+import com.example.specification.MascotaEspecificacion;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,6 +50,23 @@ public class MascotaService {
     @Transactional(readOnly = true)
     public Optional<Mascota> findByIdAndAdministrador(Long id, Long administradorId) {
         return mascotaRepository.findByIdAndAdministradorId(id, administradorId);
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Mascota> buscarPorId(Long id) {
+        return mascotaRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Mascota> listarConFiltros(MascotaFiltroDTO filtro) {
+        Specification<Mascota> spec = MascotaEspecificacion.soloDisponibles()
+                .and(MascotaEspecificacion.conEspecie(filtro.getEspecie()))
+                .and(MascotaEspecificacion.conSexo(filtro.getSexo()))
+                .and(MascotaEspecificacion.conNombreContiene(filtro.getNombre()))
+                .and(MascotaEspecificacion.conRazaContiene(filtro.getRaza()));
+        List<Mascota> mascotas = mascotaRepository.findAll(spec);
+        mascotas.forEach(mascota -> mascota.getImagenes().size());
+        return mascotas;
     }
 
     @Transactional(readOnly = true)
