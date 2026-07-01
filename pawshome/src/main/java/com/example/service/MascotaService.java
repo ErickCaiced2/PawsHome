@@ -64,7 +64,9 @@ public class MascotaService {
                 .and(MascotaEspecificacion.conSexo(filtro.getSexo()))
                 .and(MascotaEspecificacion.conNombreContiene(filtro.getNombre()))
                 .and(MascotaEspecificacion.conRazaContiene(filtro.getRaza()));
-        return mascotaRepository.findAll(spec);
+        List<Mascota> mascotas = mascotaRepository.findAll(spec);
+        mascotas.forEach(mascota -> mascota.getImagenes().size());
+        return mascotas;
     }
 
     @Transactional(readOnly = true)

@@ -73,7 +73,8 @@ class MascotaServiceTest {
                 new MockMultipartFile("imagenes", "img3.jpg", "image/jpeg", "data3".getBytes())
         );
 
-        when(blobStorageService.subir(any())).thenReturn("https://pawssources.blob.core.windows.net/mascotas/test.jpg");
+        lenient().when(blobStorageService.subir(any()))
+                .thenReturn("https://pawssources.blob.core.windows.net/mascotas/test.jpg");
     }
 
     // ── cambiarDisponibilidad ─────────────────────────────────────────────────

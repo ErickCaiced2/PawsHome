@@ -115,4 +115,74 @@
             boton.textContent = abierto ? "×" : "☰";
         });
     });
+
+    document.querySelectorAll("[data-modal-carousel]").forEach(function (carrusel) {
+        const slides = Array.from(carrusel.querySelectorAll(".modal-detalle-slide"));
+        const miniaturas = Array.from(carrusel.querySelectorAll("[data-modal-thumb]"));
+        const indicador = carrusel.querySelector("[data-modal-indicator]");
+        let indiceActual = 0;
+
+        function actualizarCarrusel(nuevoIndice) {
+            if (slides.length === 0) {
+                return;
+            }
+            indiceActual = (nuevoIndice + slides.length) % slides.length;
+            slides.forEach(function (slide, indice) {
+                slide.classList.toggle("activo", indice === indiceActual);
+            });
+            miniaturas.forEach(function (miniatura, indice) {
+                const activo = indice === indiceActual;
+                miniatura.classList.toggle("activo", activo);
+                miniatura.setAttribute("aria-current", activo ? "true" : "false");
+            });
+            if (indicador) {
+                indicador.textContent = (indiceActual + 1) + " / " + slides.length;
+            }
+        }
+
+        carrusel.querySelectorAll("[data-modal-slide]").forEach(function (boton) {
+            boton.addEventListener("click", function () {
+                actualizarCarrusel(indiceActual + (boton.dataset.modalSlide === "next" ? 1 : -1));
+            });
+        });
+
+        miniaturas.forEach(function (miniatura) {
+            miniatura.addEventListener("click", function () {
+                actualizarCarrusel(Number(miniatura.dataset.modalThumb));
+            });
+        });
+
+        actualizarCarrusel(0);
+    });
+
+    document.querySelectorAll("[data-modal-open]").forEach(function (boton) {
+        boton.addEventListener("click", function () {
+            const modal = document.getElementById(boton.dataset.modalOpen);
+            if (!modal) {
+                return;
+            }
+            if (typeof modal.showModal === "function") {
+                modal.showModal();
+            } else {
+                modal.setAttribute("open", "");
+            }
+        });
+    });
+
+    document.querySelectorAll("[data-modal-close]").forEach(function (boton) {
+        boton.addEventListener("click", function () {
+            const modal = document.getElementById(boton.dataset.modalClose);
+            if (modal) {
+                modal.close();
+            }
+        });
+    });
+
+    document.querySelectorAll(".modal-detalle-mascota").forEach(function (modal) {
+        modal.addEventListener("click", function (evento) {
+            if (evento.target === modal) {
+                modal.close();
+            }
+        });
+    });
 }());
