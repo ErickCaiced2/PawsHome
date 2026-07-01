@@ -22,10 +22,11 @@
           th:action="@{/mascotas}"
           th:object="${mascotaForm}"
           method="post"
+          enctype="multipart/form-data"
           novalidate>
         <h2>Datos de la mascota</h2>
 
-        <div class="resumen-errores" th:if="${#fields.hasAnyErrors()}">
+        <div class="resumen-errores" th:if="${#fields.hasAnyErrors() or imagenError != null}">
             Corrige los errores indicados antes de continuar.
         </div>
 
@@ -82,30 +83,21 @@
 
             <div class="grupo-campo">
                 <label for="edadAproximada">Edad aproximada (en años)</label>
-                <div class="campo-numerico">
-                    <input id="edadAproximada"
-                           type="text"
-                           th:field="*{edadAproximada}"
-                           th:classappend="${#fields.hasErrors('edadAproximada')} ? 'campo-invalido' : ''"
-                           th:aria-invalid="${#fields.hasErrors('edadAproximada')}"
-                           th:aria-describedby="${#fields.hasErrors('edadAproximada')} ? 'edadAproximada-error' : null"
-                           inputmode="decimal"
-                           placeholder="Ej: 0,5 o 2"
-                           pattern="(([0-9]|[12][0-9])(?:,[0-9])?|30(?:,0)?)"
-                           title="Usa coma para decimales, por ejemplo 0,5"
-                           data-edad-decimal
-                           data-min="0"
-                           data-max="30"
-                           required>
-                    <div class="controles-numero">
-                        <button type="button" data-stepper-increment aria-label="Aumentar edad">+</button>
-                        <button type="button" data-stepper-decrement aria-label="Disminuir edad">-</button>
-                    </div>
-                </div>
+                <input id="edadAproximada"
+                       type="text"
+                       th:field="*{edadAproximada}"
+                       th:classappend="${#fields.hasErrors('edadAproximada')} ? 'campo-invalido' : ''"
+                       th:aria-invalid="${#fields.hasErrors('edadAproximada')}"
+                       th:aria-describedby="${#fields.hasErrors('edadAproximada')} ? 'edadAproximada-error' : null"
+                       maxlength="4"
+                       inputmode="decimal"
+                       placeholder="Ej: 2 o 0,5"
+                       oninput="this.value=this.value.replace(/[^0-9,]/g,'')"
+                       required>
                 <span id="edadAproximada-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('edadAproximada')}"
-                      th:text="${#fields.errors('edadAproximada')[0]}"></span>
+                      th:errors="*{edadAproximada}"></span>
             </div>
 
             <div class="grupo-campo">
@@ -126,21 +118,6 @@
                       th:errors="*{sexo}"></span>
             </div>
 
-            <div class="grupo-campo">
-                <label for="imagenUrl">URL de imagen <span>(opcional)</span></label>
-                <input id="imagenUrl"
-                       type="url"
-                       th:field="*{imagenUrl}"
-                       th:classappend="${#fields.hasErrors('imagenUrl')} ? 'campo-invalido' : ''"
-                       th:aria-invalid="${#fields.hasErrors('imagenUrl')}"
-                       th:aria-describedby="${#fields.hasErrors('imagenUrl')} ? 'imagenUrl-error' : null"
-                       maxlength="255">
-                <span id="imagenUrl-error"
-                      class="error-campo"
-                      th:if="${#fields.hasErrors('imagenUrl')}"
-                      th:errors="*{imagenUrl}"></span>
-            </div>
-
             <div class="grupo-campo grupo-campo-ancho">
                 <label for="descripcion">Descripcion</label>
                 <textarea id="descripcion"
@@ -148,27 +125,108 @@
                           th:classappend="${#fields.hasErrors('descripcion')} ? 'campo-invalido' : ''"
                           th:aria-invalid="${#fields.hasErrors('descripcion')}"
                           th:aria-describedby="${#fields.hasErrors('descripcion')} ? 'descripcion-error' : null"
-                          maxlength="255"
-                          data-contador-caracteres="descripcion-contador"
+                          maxlength="1000"
                           placeholder="Describe el temperamento, historia y necesidades especiales de la mascota"
                           required></textarea>
-                <div class="contador-caracteres" id="descripcion-contador" aria-live="polite">
-                    0 / 255 caracteres
-                </div>
                 <span id="descripcion-error"
                       class="error-campo"
                       th:if="${#fields.hasErrors('descripcion')}"
-                      th:text="${#fields.errors('descripcion')[0]}"></span>
+                      th:errors="*{descripcion}"></span>
+            </div>
+
+            <!-- Carga de imágenes -->
+            <div class="grupo-campo grupo-campo-ancho">
+                <label for="imagenes">
+                    Fotos de la mascota <span>(mínimo 3 · JPG, PNG o WEBP · máx. 5 MB c/u)</span>
+                </label>
+
+                <div id="zona-carga"
+                     class="zona-carga"
+                     th:classappend="${imagenError != null} ? 'campo-invalido' : ''">
+                    <input id="imagenes"
+                           type="file"
+                           name="imagenes"
+                           accept="image/jpeg,image/png,image/webp"
+                           multiple
+                           required>
+                    <p class="zona-carga-texto">Arrastra tus fotos aquí o haz clic para seleccionarlas</p>
+                </div>
+
+                <span id="imagenes-contador" class="ayuda-campo"></span>
+                <span class="error-campo" th:if="${imagenError != null}" th:text="${imagenError}"></span>
+
+                <div id="imagenes-preview" class="imagenes-preview"></div>
             </div>
         </div>
 
         <div class="acciones-registro">
-            <a class="boton boton-secundario" th:href="@{/mascotas/gestion}">Cancelar</a>
+            <a class="boton boton-secundario" th:href="@{/}">Cancelar</a>
             <button class="boton boton-primario" type="submit">Registrar mascota</button>
         </div>
     </form>
 
+    <a th:href="@{/}" class="volver-inicio">← Regresar al inicio</a>
 </main>
-<script th:src="@{/js/interacciones.js}"></script>
+
+<script>
+    (function () {
+        const input = document.getElementById('imagenes');
+        const contador = document.getElementById('imagenes-contador');
+        const preview = document.getElementById('imagenes-preview');
+        const TIPOS_VALIDOS = ['image/jpeg', 'image/png', 'image/webp'];
+        const MAX_BYTES = 5 * 1024 * 1024;
+
+        input.addEventListener('change', function () {
+            preview.innerHTML = '';
+            const archivos = Array.from(this.files);
+            let errores = [];
+
+            archivos.forEach(function (archivo, i) {
+                if (!TIPOS_VALIDOS.includes(archivo.type)) {
+                    errores.push(archivo.name + ': formato no permitido');
+                    return;
+                }
+                if (archivo.size > MAX_BYTES) {
+                    errores.push(archivo.name + ': supera 5 MB');
+                    return;
+                }
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = 'imagen-preview-item';
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.alt = 'Imagen ' + (i + 1);
+                    const label = document.createElement('span');
+                    label.textContent = i === 0 ? 'Portada' : 'Foto ' + (i + 1);
+                    wrapper.appendChild(img);
+                    wrapper.appendChild(label);
+                    preview.appendChild(wrapper);
+                };
+                reader.readAsDataURL(archivo);
+            });
+
+            const validas = archivos.filter(function (f) {
+                return TIPOS_VALIDOS.includes(f.type) && f.size <= MAX_BYTES;
+            }).length;
+
+            contador.textContent = validas + ' imagen(es) seleccionada(s)' +
+                (errores.length > 0 ? ' · ' + errores.join(', ') : '');
+            contador.style.color = validas >= 3 ? '#2e7d32' : '#c62828';
+        });
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const archivos = Array.from(input.files).filter(function (f) {
+                return TIPOS_VALIDOS.includes(f.type) && f.size <= MAX_BYTES;
+            });
+            if (archivos.length < 3) {
+                e.preventDefault();
+                contador.textContent = 'Debes seleccionar al menos 3 imágenes válidas antes de enviar';
+                contador.style.color = '#c62828';
+                input.focus();
+            }
+        });
+    })();
+</script>
 </body>
 </html>

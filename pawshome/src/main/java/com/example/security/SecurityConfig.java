@@ -37,7 +37,8 @@ public class SecurityConfig {
         http
             .authenticationProvider(authenticationProvider())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/mascotas/disponibles",
+                .requestMatchers("/login", "/mascotas/disponibles", "/catalogo", "/catalogo/**",
+                        "/mascotas/*/imagenes",
                         "/css/**", "/js/**", "/img/**", "/images/**", "/", "/calc").permitAll()
                 .requestMatchers("/mascotas/nueva", "/mascotas",
                         "/mascotas/gestion", "/mascotas/*/disponibilidad")

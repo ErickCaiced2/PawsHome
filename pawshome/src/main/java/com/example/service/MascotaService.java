@@ -5,12 +5,19 @@ import com.example.exception.AccesoDenegadoException;
 import com.example.exception.MascotaNoEncontradaException;
 import com.example.model.EstadoMascota;
 import com.example.model.Mascota;
+import com.example.model.MascotaImagen;
 import com.example.model.RolUsuario;
 import com.example.model.Usuario;
+import com.example.dto.MascotaFiltroDTO;
+import com.example.repository.MascotaImagenRepository;
 import com.example.repository.MascotaRepository;
+import com.example.specification.MascotaEspecificacion;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,9 +26,15 @@ import java.util.Optional;
 public class MascotaService {
 
     private final MascotaRepository mascotaRepository;
+    private final MascotaImagenRepository mascotaImagenRepository;
+    private final BlobStorageService blobStorageService;
 
-    public MascotaService(MascotaRepository mascotaRepository) {
+    public MascotaService(MascotaRepository mascotaRepository,
+                          MascotaImagenRepository mascotaImagenRepository,
+                          BlobStorageService blobStorageService) {
         this.mascotaRepository = mascotaRepository;
+        this.mascotaImagenRepository = mascotaImagenRepository;
+        this.blobStorageService = blobStorageService;
     }
 
     @Transactional(readOnly = true)
@@ -39,6 +52,29 @@ public class MascotaService {
         return mascotaRepository.findByIdAndAdministradorId(id, administradorId);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<Mascota> buscarPorId(Long id) {
+        return mascotaRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Mascota> listarConFiltros(MascotaFiltroDTO filtro) {
+        Specification<Mascota> spec = MascotaEspecificacion.soloDisponibles()
+                .and(MascotaEspecificacion.conEspecie(filtro.getEspecie()))
+                .and(MascotaEspecificacion.conSexo(filtro.getSexo()))
+                .and(MascotaEspecificacion.conNombreContiene(filtro.getNombre()))
+                .and(MascotaEspecificacion.conRazaContiene(filtro.getRaza()));
+        return mascotaRepository.findAll(spec);
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> listarImagenes(Long mascotaId) {
+        return mascotaImagenRepository.findByMascotaIdOrderByOrdenAsc(mascotaId)
+                .stream()
+                .map(img -> img.getImagenUrl())
+                .toList();
+    }
+
     @Transactional
     public void cambiarDisponibilidad(Long mascotaId, EstadoMascota nuevoEstado, Usuario administrador) {
         if (administrador.getRol() != RolUsuario.ADMINISTRADOR_REFUGIO) {
@@ -54,7 +90,7 @@ public class MascotaService {
     }
 
     @Transactional
-    public Mascota registrarMascota(MascotaForm form, Usuario administrador) {
+    public Mascota registrarMascota(MascotaForm form, List<MultipartFile> imagenes, Usuario administrador) {
         if (administrador.getRol() != RolUsuario.ADMINISTRADOR_REFUGIO) {
             throw new AccesoDenegadoException("Solo administradores de refugio pueden registrar mascotas");
         }
@@ -68,10 +104,21 @@ public class MascotaService {
         mascota.setEdadAproximada(edad == 1.0 ? "1 año" : edadTexto + " años");
         mascota.setSexo(form.getSexo());
         mascota.setDescripcion(form.getDescripcion());
-        mascota.setImagenUrl(form.getImagenUrl());
         mascota.setEstadoDisponibilidad(EstadoMascota.DISPONIBLE);
         mascota.setFechaPublicacion(LocalDateTime.now());
         mascota.setAdministrador(administrador);
+
+        for (int i = 0; i < imagenes.size(); i++) {
+            try {
+                String url = blobStorageService.subir(imagenes.get(i));
+                mascota.getImagenes().add(new MascotaImagen(url, i, mascota));
+                if (i == 0) {
+                    mascota.setImagenUrl(url);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Error al subir imagen " + (i + 1) + ": " + e.getMessage(), e);
+            }
+        }
 
         return mascotaRepository.save(mascota);
     }
