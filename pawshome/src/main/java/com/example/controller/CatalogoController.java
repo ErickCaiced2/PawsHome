@@ -5,6 +5,7 @@ import com.example.service.MascotaService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,6 +17,17 @@ public class CatalogoController {
 
     public CatalogoController(MascotaService mascotaService) {
         this.mascotaService = mascotaService;
+    }
+
+    @GetMapping("/{id}")
+    public String perfil(@PathVariable Long id, Model model) {
+        return mascotaService.buscarPorId(id)
+                .map(mascota -> {
+                    model.addAttribute("mascota", mascota);
+                    model.addAttribute("imagenes", mascotaService.listarImagenes(id));
+                    return "mascotas/perfil-mascota";
+                })
+                .orElse("redirect:/catalogo");
     }
 
     @GetMapping
